@@ -31,14 +31,4 @@ In development
 
 WAMR has an [officially supported component](https://components.espressif.com/components/espressif/wasm-micro-runtime/versions/2.4.0~1/readme) for esp.
 
-The wamr-rust-sdk can't work easily for ESP32 because it relies on a sys crate based on the C wamr source, and those assume desktop use, so really hard to compile for ESP.
-
-To add this component in the embassy project, esp-idf-sys can pick up an environment variable : ESP_IDF_EXTRA_COMPONENT_DIRS from which it will load extra esp-idf components from the given dir.
-
-It probably requires a bridge crate though, with some kind of `build.rs` with only the relevant wamr functions reexported. from the crate, we can define a yml file that defines esp-idf component dependencies in this format:
-
-```yml
-dependencies:
-  wasm-micro-runtime/wamr:
-    version: ">=2.1.0"
-```
+The wamr-rust-sdk can use it directly by using the "esp-idf" feature flag, and fall back to building it from source on desktop.
