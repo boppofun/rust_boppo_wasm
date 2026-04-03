@@ -22,7 +22,7 @@ In development
 
 ## Key design questions remaining
 
-1. AOT compilation of wasm modules would probably be beneficial for activities; but this requires a compatible Wamr version to compile the wasm file -- an extra step. Wouldn't it be interesting, for "third party activity developers" developer experience, to provide the build step as a web service on the boppo activity developer portal (or whatever it ends up being named ;) ) ? This way they can compile to wasm and we do the final AOT step. We can keep interpreter mode for development or fallback, but AOT seems interesting on embedded devices -- limited resources and all.
+1. AOT compilation of wasm modules would probably be beneficial for activities (read from flash, not copied to RAM); but this requires a compatible Wamr version to compile the wasm file -- an extra step. Wouldn't it be interesting, for "third party activity developers" developer experience, to provide the build step as a web service on the boppo activity developer portal (or whatever it ends up being named ;) ) ? This way they can compile to wasm and we do the final AOT step. We can keep interpreter mode for development or fallback, but AOT seems interesting on embedded devices -- limited resources and all.
 
 
 ## Findings for later
@@ -42,5 +42,3 @@ dependencies:
   wasm-micro-runtime/wamr:
     version: ">=2.1.0"
 ```
-
-We can probably integrate WAMR i
