@@ -25,7 +25,7 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      inkscape:zoom="0.74297138"
-     inkscape:cx="397.05433"
+     inkscape:cx="399.74622"
      inkscape:cy="345.23537"
      inkscape:window-width="1920"
      inkscape:window-height="1014"
@@ -256,13 +256,12 @@
        inkscape:isstock="true"
        inkscape:label="Rayures 2:3">
       <rect
-   style="stroke:none"
-   x="0"
-   y="-0.5"
-   width="1"
-   height="2"
-   id="rect140" />
-
+         style="stroke:none"
+         x="0"
+         y="-0.5"
+         width="1"
+         height="2"
+         id="rect140" />
     </pattern>
     <linearGradient
        id="swatch5"
@@ -322,17 +321,6 @@
        ry="3.0526438" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro';text-align:justify;stroke-width:0.264583"
-       x="5.6978416"
-       y="122.14748"
-       id="text2"><tspan
-         sodipodi:role="line"
-         id="tspan2"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro';stroke-width:0.264583"
-         x="5.6978416"
-         y="122.14748">boppo_core</tspan></text>
-    <text
-       xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;stroke-width:0.264583"
        x="233.61151"
        y="70.154678"
@@ -342,17 +330,6 @@
          x="233.61151"
          y="70.154678"
          id="tspan21">WAMR runtime</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro';text-align:justify;white-space:pre;inline-size:19.6088;display:inline;stroke-width:0.264583"
-       x="125.35252"
-       y="55.197842"
-       id="text3"><tspan
-         x="125.35252"
-         y="55.197842"
-         id="tspan6"><tspan
-           dx="0 2.963336 2.963336 2.963336 2.963336 2.963336 2.963336 2.963335 2.9633369 2.9633369"
-           id="tspan1">boppo_core</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Bold';text-align:justify;stroke-width:0.264583"
@@ -506,17 +483,6 @@
          x="10.643048"
          y="49.103477"
          ry="3.0526438" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro';text-align:justify;white-space:pre;inline-size:12.4865;display:inline;stroke-width:0.264583"
-         x="12.820144"
-         y="54.129498"
-         id="text19"><tspan
-           x="12.820144"
-           y="54.129498"
-           id="tspan8"><tspan
-             dx="0 2.963336 2.963336 2.963336 2.963336 2.963336 2.963336 2.963335 2.9633369 2.9633369"
-             id="tspan7">boppo_core</tspan></tspan></text>
     </g>
     <rect
        style="fill:url(#pattern37);stroke:#000000;stroke-width:0.784523;stroke-linecap:butt;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
@@ -571,42 +537,27 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;stroke-width:0.264583"
-       x="233.61151"
-       y="12.107914"
+       x="235.39209"
+       y="11.395683"
        id="text29"><tspan
          sodipodi:role="line"
          id="tspan28"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';stroke-width:0.264583"
-         x="233.61151"
-         y="12.107914">Boppo Runtime</tspan><tspan
+         x="235.39209"
+         y="11.395683">Boppo Runtime</tspan><tspan
          sodipodi:role="line"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';stroke-width:0.264583"
-         x="233.61151"
-         y="18.281527"
+         x="235.39209"
+         y="17.569296"
          id="tspan29">(Device/Emulator)</tspan></text>
-    <g
-       id="g30"
-       transform="translate(194.43885,-43.089929)">
-      <rect
-         style="fill:none;fill-opacity:0.395482;stroke:#000000;stroke-width:0.419189;stroke-linecap:round;stroke-opacity:1"
-         id="rect29"
-         width="57.415348"
-         height="23.940525"
-         x="10.643048"
-         y="49.103477"
-         ry="3.0526438" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro';text-align:justify;white-space:pre;inline-size:12.4865;display:inline;stroke-width:0.264583"
-         x="12.820144"
-         y="54.129498"
-         id="text30"><tspan
-           x="12.820144"
-           y="54.129498"
-           id="tspan10"><tspan
-             dx="0 2.963336 2.963336 2.963336 2.963336 2.963336 2.963336 2.963335 2.9633369 2.9633369"
-             id="tspan9">boppo_core</tspan></tspan></text>
-    </g>
+    <rect
+       style="fill:none;fill-opacity:0.395482;stroke:#000000;stroke-width:0.419189;stroke-linecap:round;stroke-opacity:1"
+       id="rect29"
+       width="57.415348"
+       height="23.940525"
+       x="205.08189"
+       y="6.0135484"
+       ry="3.0526438" />
     <rect
        style="fill:url(#pattern32);stroke:#000000;stroke-width:0.784523;stroke-linecap:butt;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
        id="rect30"
@@ -637,11 +588,11 @@
        transform="translate(4.2733812,-7.4784175)"><tspan
          x="244.65108"
          y="47.007195"
-         id="tspan11">configures and expose
+         id="tspan2">configures and expose
 </tspan><tspan
          x="244.65108"
          y="52.739828"
-         id="tspan12">wasm-callable functions</tspan></text>
+         id="tspan3">wasm-callable functions</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.75;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker34)"
        d="m 195.50719,122.85971 c -9.08911,0 -14.58342,0 -21.01079,0"
@@ -671,17 +622,17 @@
        transform="translate(-39.528778,12.464028)"><tspan
          x="147.43166"
          y="114.31295"
-         id="tspan14"><tspan
+         id="tspan7"><tspan
            dx="0 0 0 0 0 0 0 0 0 0 0 1.8858041 0 0 0 0 0 0 1.8858021 0 0 0 0 0 1.8858021"
-           id="tspan13">implements custom layer for </tspan></tspan><tspan
+           id="tspan6">implements custom layer for </tspan></tspan><tspan
          x="147.43166"
          y="120.04558"
-         id="tspan20"><tspan
+         id="tspan9"><tspan
            dx="0 0 0 0 0.40541446 0 0 0.40541446 0 0 0 0 0.40541542 0 0 0 0 0.40541351"
-           id="tspan19">HAL to call into WASM-exposed </tspan></tspan><tspan
+           id="tspan8">HAL to call into WASM-exposed </tspan></tspan><tspan
          x="147.43166"
          y="125.77822"
-         id="tspan27">functions</tspan></text>
+         id="tspan10">functions</tspan></text>
     <rect
        style="fill:url(#pattern51);stroke:#000000;stroke-width:0.784523;stroke-linecap:butt;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
        id="rect37"
@@ -726,12 +677,12 @@
        transform="translate(-3.9172673,-25.996404)"><tspan
          x="147.43166"
          y="114.31295"
-         id="tspan31"><tspan
+         id="tspan12"><tspan
            dx="0 0 0 0 0 0 0.95528686 0 0 0 0 0 0 0 0 0 0 0 0 0.95528686"
-           id="tspan30">Calls WASM-exposed hardware </tspan></tspan><tspan
+           id="tspan11">Calls WASM-exposed hardware </tspan></tspan><tspan
          x="147.43166"
          y="120.04558"
-         id="tspan32">interface</tspan></text>
+         id="tspan13">interface</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:10.5833px;line-height:1.25;font-family:'Early GameBoy';-inkscape-font-specification:'Early GameBoy';text-align:justify;stroke-width:0.264583"
@@ -777,7 +728,7 @@
        transform="translate(8.5467615,-71.223023)"><tspan
          x="147.43166"
          y="114.31295"
-         id="tspan33">Calls actual hardware/emulator</tspan></text>
+         id="tspan14">Calls actual hardware/emulator</tspan></text>
     <rect
        style="fill:url(#pattern45);stroke:#000000;stroke-width:0.784523;stroke-linecap:butt;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
        id="rect44"
@@ -817,14 +768,14 @@
        transform="translate(-24.928058,1.7805756)"><tspan
          x="115.38129"
          y="188.74101"
-         id="tspan36"><tspan
+         id="tspan20"><tspan
            style="font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro'"
-           id="tspan34">Wraps user main function to set up </tspan></tspan><tspan
+           id="tspan19">Wraps user main function to set up </tspan></tspan><tspan
          x="115.38129"
          y="194.89859"
-         id="tspan38"><tspan
+         id="tspan30"><tspan
            style="font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro'"
-           id="tspan37">executor and external bindings</tspan></tspan></text>
+           id="tspan27">executor and external bindings</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.58611px;line-height:1.25;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;stroke-width:0.264583"
@@ -855,5 +806,16 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';stroke-width:0.138429"
          x="257.17279"
          y="102.62603">main</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro';text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="21.366905"
+       y="122.85971"
+       id="text1"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro';stroke-width:0.264583"
+         x="21.366905"
+         y="122.85971"
+         id="tspan1"
+         sodipodi:role="line">boppo_core</tspan></text>
   </g>
 </svg>
