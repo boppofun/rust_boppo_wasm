@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="297mm"
+   height="210mm"
+   viewBox="0 0 297 210"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
+   sodipodi:docname="threadmodel-buttons.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#111111"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.71713664"
+     inkscape:cx="497.81308"
+     inkscape:cy="378.58894"
+     inkscape:window-width="1920"
+     inkscape:window-height="1014"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     showguides="false" />
+  <defs
+     id="defs1">
+    <marker
+       style="overflow:visible"
+       id="ArrowTriangleStylized"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Stylized triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="m 6,0 c -3,1 -7,3 -9,5 0,0 0,-4 2,-5 -2,-1 -2,-5 -2,-5 2,2 6,4 9,5 z"
+         id="path4" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#f6f5f4;stroke:none;stroke-width:0.25;stroke-dasharray:none;stroke-opacity:1"
+       id="rect8"
+       width="302.90311"
+       height="215.46335"
+       x="-2.9515526"
+       y="-2.2136648"
+       ry="0"
+       sodipodi:insensitive="true" />
+    <rect
+       style="fill:none;fill-opacity:0.395482;stroke:#000000;stroke-width:0.296665;stroke-linecap:round;stroke-opacity:1"
+       id="rect29"
+       width="47.576382"
+       height="14.470502"
+       x="54.129898"
+       y="19.683802"
+       ry="1.8451262" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="78.639534"
+       y="28.310631"
+       id="text29"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';stroke-width:0.264583"
+         x="78.639534"
+         y="28.310631"
+         id="tspan29">Main thread</tspan></text>
+    <g
+       id="g8"
+       transform="translate(7.3788817)">
+      <rect
+         style="fill:none;fill-opacity:0.395482;stroke:#000000;stroke-width:0.296665;stroke-linecap:round;stroke-opacity:1"
+         id="rect1"
+         width="121.73415"
+         height="14.470501"
+         x="130.50133"
+         y="19.683804"
+         ry="1.8451262" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="191.1675"
+         y="28.310631"
+         id="text1"><tspan
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';stroke-width:0.264583"
+           x="191.1675"
+           y="28.310631"
+           id="tspan1">Activity thread</tspan></text>
+    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 78.216146,33.573914 V 190.7441"
+       id="path1" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 240.9205,48.700622 V 188.89938"
+       id="path2"
+       sodipodi:nodetypes="cc" />
+    <g
+       id="g9"
+       transform="translate(-5.5341623,-2.5826087)">
+      <rect
+         style="fill:none;fill-opacity:0.395482;stroke:#000000;stroke-width:0.296665;stroke-linecap:round;stroke-opacity:1"
+         id="rect9"
+         width="38.179813"
+         height="11.612506"
+         x="226.05786"
+         y="39.237839"
+         ry="1.8451262" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="245.03334"
+         y="46.019951"
+         id="text9"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';stroke-width:0.264583"
+           x="245.03334"
+           y="46.019951"
+           id="tspan9"
+           sodipodi:role="line">Activity code</tspan></text>
+    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 199.22982,48.700622 V 188.89938"
+       id="path9"
+       sodipodi:nodetypes="cc" />
+    <g
+       id="g10"
+       transform="translate(-47.224845,-2.5826087)">
+      <rect
+         style="fill:none;fill-opacity:0.395482;stroke:#000000;stroke-width:0.296665;stroke-linecap:round;stroke-opacity:1"
+         id="rect10"
+         width="38.179813"
+         height="11.612506"
+         x="226.05786"
+         y="39.237839"
+         ry="1.8451262" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="245.03334"
+         y="48.233616"
+         id="text10"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';stroke-width:0.264583"
+           x="245.03334"
+           y="48.233616"
+           id="tspan10"
+           sodipodi:role="line">boppo_core API</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="245.03334"
+         y="44.544174"
+         id="text12"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';stroke-width:0.264583"
+           x="245.03334"
+           y="44.544174"
+           id="tspan12"
+           sodipodi:role="line">High level</tspan></text>
+    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 157.90808,48.700622 V 188.89938"
+       id="path10"
+       sodipodi:nodetypes="cc" />
+    <g
+       id="g11"
+       transform="translate(-88.546584,-2.5826087)">
+      <rect
+         style="fill:none;fill-opacity:0.395482;stroke:#000000;stroke-width:0.296665;stroke-linecap:round;stroke-opacity:1"
+         id="rect11"
+         width="38.179813"
+         height="11.612506"
+         x="226.05786"
+         y="39.237839"
+         ry="1.8451262" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="245.03334"
+         y="43.437344"
+         id="text11"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';stroke-width:0.264583"
+           x="245.03334"
+           y="43.437344"
+           id="tspan11"
+           sodipodi:role="line">boppo_wasm </tspan><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';stroke-width:0.264583"
+           x="245.03334"
+           y="49.610954"
+           sodipodi:role="line"
+           id="tspan13">HAL</tspan></text>
+    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.687312;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowTriangleStylized)"
+       d="M 78.165634,109.94534 H 152.42534"
+       id="path14"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.687312;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowTriangleStylized)"
+       d="m 203.23768,120.64472 h 35.52058"
+       id="path17"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.687312;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowTriangleStylized)"
+       d="m 160.07122,115.47951 h 34.0448"
+       id="path13"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.687312;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowTriangleStylized)"
+       d="M 240.80681,71.206215 H 205.65518"
+       id="path5"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;white-space:pre;inline-size:73.5356;display:inline;stroke-width:0.264583"
+       x="172.35133"
+       y="36.796345"
+       id="text18"
+       transform="translate(-54.972671,68.254658)"><tspan
+         x="172.35133"
+         y="36.796345"
+         id="tspan2">boppo_wasm_on_button_event</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;white-space:pre;inline-size:57.3021;display:inline;stroke-width:0.264583"
+       x="172.35133"
+       y="36.796345"
+       id="text19"
+       transform="translate(47.593789,23.981367)"><tspan
+         x="172.35133"
+         y="36.796345"
+         id="tspan3">button_events
+</tspan><tspan
+         x="172.35133"
+         y="42.969959"
+         id="tspan4">.next()</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 53.496896,50.176399 V 190.37515"
+       id="path19"
+       sodipodi:nodetypes="cc" />
+    <g
+       id="g21"
+       transform="translate(-192.95776,-1.1068323)">
+      <rect
+         style="fill:none;fill-opacity:0.395482;stroke:#000000;stroke-width:0.296665;stroke-linecap:round;stroke-opacity:1"
+         id="rect19"
+         width="38.179813"
+         height="11.612506"
+         x="226.05786"
+         y="39.237839"
+         ry="1.8451262" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;white-space:pre;inline-size:35.194;display:inline;stroke-width:0.264583"
+         x="245.03334"
+         y="43.437344"
+         id="text21"><tspan
+           x="245.03334"
+           y="43.437344"
+           id="tspan5"> device/emulator<tspan
+   y="43.437344"
+   id="tspan6"> </tspan></tspan><tspan
+           x="245.03334"
+           y="49.610957"
+           id="tspan7">HAL</tspan></text>
+    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.687312;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowTriangleStylized)"
+       d="M 54.184263,106.99379 H 73.840236"
+       id="path23"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1.25;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;white-space:pre;inline-size:21.8834;display:inline;stroke-width:0.264583"
+       x="172.35133"
+       y="36.796345"
+       id="text23"
+       transform="translate(-107.73168,52.390062)"><tspan
+         x="172.35133"
+         y="36.796345"
+         id="tspan8">raw
+</tspan><tspan
+         x="172.35133"
+         y="42.969959"
+         id="tspan14">button<tspan
+   y="42.969959"
+   id="tspan15"> </tspan></tspan><tspan
+         x="172.35133"
+         y="49.143573"
+         id="tspan16">event</tspan></text>
+    <rect
+       style="fill:#f6f5f4;stroke:#000000;stroke-width:0.25;stroke-dasharray:none;stroke-opacity:1"
+       id="rect23"
+       width="5.5341644"
+       height="51.28323"
+       x="197.38509"
+       y="70.468307"
+       ry="1.5833495" />
+    <rect
+       style="fill:#f6f5f4;stroke:#000000;stroke-width:0.25;stroke-dasharray:none;stroke-opacity:1"
+       id="rect24"
+       width="5.5341644"
+       height="39.477016"
+       x="154.95651"
+       y="76.740356"
+       ry="1.5833495" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.687312;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowTriangleStylized)"
+       d="m 196.90245,78.954044 h -34.0448"
+       id="path24"
+       sodipodi:nodetypes="cc" />
+  </g>
+</svg>
