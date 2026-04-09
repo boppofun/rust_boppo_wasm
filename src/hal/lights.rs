@@ -21,3 +21,7 @@ impl HalLights for WasmHalLights {
         }
     }
 }
+
+pub fn init_lights() {
+    boppo_core::hal::set_lights(WasmHalLights);
+}

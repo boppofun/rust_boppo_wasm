@@ -1,1 +1,1 @@
-mod lights;
+pub mod lights;
