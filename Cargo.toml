@@ -4,4 +4,4 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-boppo-core = {path = "../device_software/libs/boppo_core"}
+boppo_core = {path = "../device_software/libs/boppo_core"}
