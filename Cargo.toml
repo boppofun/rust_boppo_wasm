@@ -5,3 +5,5 @@ edition = "2024"
 
 [dependencies]
 boppo_core = {path = "../device_software/libs/boppo_core"}
+edge-executor = "0.4.1"
+tokio = { version = "1.21", features = ["sync"] }

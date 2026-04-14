@@ -55,6 +55,8 @@ name = "boppo_wasm_activity"
 version = "0.1.0"
 dependencies = [
  "boppo_core",
+ "edge-executor",
+ "tokio",
 ]
 
 [[package]]
