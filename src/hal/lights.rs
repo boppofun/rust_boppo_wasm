@@ -3,7 +3,10 @@ use boppo_core::hal::HalLights;
 
 #[link(wasm_import_module = "host")]
 unsafe extern "C" {
+    /// calls set_color on the host
     fn boppo_wasm_set_color(idx: i32, r: i32, g: i32, b: i32);
+
+    /// Calls flush on the host
     fn boppo_wasm_flush();
 }
 

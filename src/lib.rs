@@ -1,3 +1,7 @@
 mod hal;
 
-pub use hal::lights::{WasmHalLights, init_lights};
+pub fn init() {
+    hal::init();
+}
+
+pub use hal::executor::block_on;
