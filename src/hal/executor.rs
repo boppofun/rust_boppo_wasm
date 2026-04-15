@@ -10,7 +10,10 @@ use std::{
 
 use edge_executor::LocalExecutor;
 
-use crate::hal::buttons::{boppo_wasm_poll, register_event};
+use crate::hal::{
+    buttons::{boppo_wasm_poll, register_event},
+    timer::{next_timeout, reset_next_deadline},
+};
 
 const MAX_TASKS: usize = 32;
 static EXECUTOR: AtomicPtr<LocalExecutor<'static, MAX_TASKS>> =
@@ -54,6 +57,10 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
     let mut cx = Context::from_waker(&waker);
 
     loop {
+        // If set, reset the next sleep() deadline to None so polling below can reset
+        // it with a fresh value
+        reset_next_deadline();
+
         // Poll futures first so they can register their subscriptions (e.g. button
         // receivers) before we block waiting for the next event.
         // Waiting is done below on the native host thread during boppo_wasm_poll
@@ -61,12 +68,23 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
         if let Poll::Ready(v) = top.as_mut().poll(&mut cx) {
             return v;
         }
+        let next_timeout = next_timeout();
+        // Block until the next host event or next sleep deadline, then wake the futures above.
+        let raw = unsafe { boppo_wasm_poll(next_timeout) };
 
-        // Block until the next host event, then wake the futures above.
-        let raw = unsafe {
-            // TODO: insert next timer here
-            boppo_wasm_poll(0)
-        };
-        register_event(raw);
+        // The raw_wasm_code is an i32 representing a ButtonEvent if it's >= 0, a timeout if
+        // it's equal to -1, and a closed channel if it's equal to -2 that should exit early.
+        match raw {
+            e if e >= 0 => {
+                register_event(e);
+            }
+            -1 => {
+                // Timeout. Do nothing. The next iteration will wake the matching future.
+            }
+            _ => {
+                // -2 or anything else : host channel got disconnected.
+                std::process::exit(0);
+            }
+        }
     }
 }

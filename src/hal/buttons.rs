@@ -1,6 +1,6 @@
 use std::sync::OnceLock;
 
-use boppo_core::{ButtonEvent, log};
+use boppo_core::ButtonEvent;
 use tokio::sync::broadcast;
 
 #[link(wasm_import_module = "host")]
@@ -16,25 +16,14 @@ unsafe extern "C" {
 static BUTTON_SENDER: OnceLock<broadcast::Sender<ButtonEvent>> = OnceLock::new();
 
 /// Registers an event to an event queue when a button event is sent from the host
-///
-/// The raw_wasm_code is an i32 representing a ButtonEvent if it's >= 0, a timeout if
-/// it's equal to -1, and a closed channel if it's equal to -2 that should exit early.
 pub fn register_event(raw_wasm_code: i32) {
     match raw_wasm_code {
         e if e >= 0 => {
             let event = ButtonEvent::from_u16(raw_wasm_code as u16);
             let _ = BUTTON_SENDER.get().unwrap().send(event);
         }
-        -1 => {
-            //timeout has been reached
-            // TODO : wake the next waiting timer
-            todo!()
-        }
         _ => {
-            log::info!("WASM received close signal. Exiting...");
-            // channel closed (-2 or any other).
-            // This means the top-level activity thread is requesting a clean exit.
-            std::process::exit(0);
+            unreachable!("An invalid button event was sent to register_event");
         }
     }
 }
