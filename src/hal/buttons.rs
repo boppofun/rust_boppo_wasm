@@ -1,6 +1,6 @@
 use std::sync::OnceLock;
 
-use boppo_core::ButtonEvent;
+use boppo_core::{ButtonEvent, log};
 use tokio::sync::broadcast;
 
 #[link(wasm_import_module = "host")]
@@ -30,7 +30,12 @@ pub fn register_event(raw_wasm_code: i32) {
             // TODO : wake the next waiting timer
             todo!()
         }
-        _ => {} // channel closed (-2 or any other). Next host loop, completion should be triggered naturally.
+        _ => {
+            log::info!("WASM received close signal. Exiting...");
+            // channel closed (-2 or any other).
+            // This means the top-level activity thread is requesting a clean exit.
+            std::process::exit(0);
+        }
     }
 }
 
