@@ -54,13 +54,17 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
     let mut cx = Context::from_waker(&waker);
 
     loop {
-        if let Poll::Ready(v) = top.as_mut().poll(&mut cx) {
-            return v;
-        }
+        // Poll actual events from the host and register events so that
+        // futures polled above can yield below
         let raw = unsafe {
             // TODO: insert next timer here
             boppo_wasm_poll(0)
         };
         register_event(raw);
+
+        // Poll futures - the actual waiting happens below
+        if let Poll::Ready(v) = top.as_mut().poll(&mut cx) {
+            return v;
+        }
     }
 }
