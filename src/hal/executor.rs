@@ -54,17 +54,19 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
     let mut cx = Context::from_waker(&waker);
 
     loop {
-        // Poll actual events from the host and register events so that
-        // futures polled above can yield below
+        // Poll futures first so they can register their subscriptions (e.g. button
+        // receivers) before we block waiting for the next event.
+        // Waiting is done below on the native host thread during boppo_wasm_poll
+        // which waits for the next button event
+        if let Poll::Ready(v) = top.as_mut().poll(&mut cx) {
+            return v;
+        }
+
+        // Block until the next host event, then wake the futures above.
         let raw = unsafe {
             // TODO: insert next timer here
             boppo_wasm_poll(0)
         };
         register_event(raw);
-
-        // Poll futures - the actual waiting happens below
-        if let Poll::Ready(v) = top.as_mut().poll(&mut cx) {
-            return v;
-        }
     }
 }
