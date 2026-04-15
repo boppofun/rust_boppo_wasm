@@ -8,7 +8,7 @@ use std::{
     task::{Context, Poll, RawWaker, RawWakerVTable, Waker},
 };
 
-use edge_executor::LocalExecutor;
+use edge_executor::{LocalExecutor, Task};
 
 use crate::hal::{
     buttons::{boppo_wasm_poll, register_event},
@@ -25,6 +25,18 @@ pub fn init() {
     boppo_core::hal::set_executor(executor);
 }
 
+/// Spawns an asynchronous task
+///
+/// TODO: automatically clean up activity tasks when an activity is ended
+/// (e.g. home button press).
+pub fn spawn<F, T>(fut: F) -> Task<T>
+where
+    F: Future<Output = T> + Send + 'static,
+    T: Send + 'static,
+{
+    executor().spawn(fut)
+}
+
 /// Gets the executor from the atomic pointer.
 ///
 /// # Safety
@@ -36,7 +48,7 @@ fn executor() -> &'static LocalExecutor<'static, MAX_TASKS> {
 
 /// We need a waker for the Context API, in turn needed by the Future::poll API
 /// Since the actual waiting for our polling function happens on the host
-/// with its own executor, we just need a dummy no-op waker to satisfy the API.
+/// with its own executor, we just need a simple waker to satisfy the API.
 ///
 /// # Safety
 /// The pointer is null and no allocation happens even on cloning.
