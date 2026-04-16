@@ -1,31 +1,42 @@
+use std::os::raw::c_void;
+
 use boppo_core::color::RGB;
+use boppo_core::color::rgb::Rgb;
 use boppo_core::hal::HalLights;
+use boppo_core::{Framebuffer, Lights, NUM_LIGHTS};
 
 #[link(wasm_import_module = "host")]
 unsafe extern "C" {
-    /// calls set_color on the host
-    fn boppo_wasm_set_color(idx: i32, r: i32, g: i32, b: i32);
-
     /// Calls flush on the host
-    fn boppo_wasm_flush();
+    fn boppo_wasm_flush(framebuffer_colors: *const c_void);
 }
 
-pub struct WasmHalLights;
+pub struct WasmHalLights {
+    framebuffer: Framebuffer,
+}
+
+impl Default for WasmHalLights {
+    fn default() -> Self {
+        Self {
+            framebuffer: Framebuffer::new(),
+        }
+    }
+}
 
 impl HalLights for WasmHalLights {
     fn set_color(&mut self, idx: usize, color: RGB) {
-        unsafe {
-            boppo_wasm_set_color(idx as i32, color.r as i32, color.g as i32, color.b as i32);
-        }
+        self.framebuffer.set_color(Lights::from_index(idx), color);
     }
 
     fn flush(&mut self) {
         unsafe {
-            boppo_wasm_flush();
+            boppo_wasm_flush(
+                &self.framebuffer.colors as *const [Rgb<u8>; NUM_LIGHTS] as *const c_void,
+            );
         }
     }
 }
 
 pub fn init_lights() {
-    boppo_core::hal::set_lights(WasmHalLights);
+    boppo_core::hal::set_lights(WasmHalLights::default());
 }
