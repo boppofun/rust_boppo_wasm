@@ -12,7 +12,7 @@ use edge_executor::{LocalExecutor, Task};
 
 use crate::hal::{
     buttons::{boppo_wasm_poll, register_event},
-    timer::{next_timeout, reset_next_deadline},
+    timer::{next_timeout, wake_and_clean_expired_timers},
 };
 
 const MAX_TASKS: usize = 32;
@@ -69,10 +69,6 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
     let mut cx = Context::from_waker(&waker);
 
     loop {
-        // If set, reset the next sleep() deadline to None so polling below can reset
-        // it with a fresh value
-        reset_next_deadline();
-
         // Poll futures first so they can register their subscriptions (e.g. button
         // receivers) before we block waiting for the next event.
         // Waiting is done below on the native host thread during boppo_wasm_poll
@@ -91,7 +87,8 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
                 register_event(e);
             }
             -1 => {
-                // Timeout. Do nothing. The next iteration will wake the matching future.
+                // Timeout.
+                wake_and_clean_expired_timers();
             }
             _ => {
                 // -2 or anything else : host channel got disconnected.
