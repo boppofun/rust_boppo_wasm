@@ -56,6 +56,7 @@ version = "0.1.0"
 dependencies = [
  "boppo_core",
  "edge-executor",
+ "embassy-time-driver",
  "tokio",
 ]
 

@@ -4,7 +4,7 @@
 
 use std::{
     pin::pin,
-    sync::atomic::AtomicPtr,
+    sync::atomic::{AtomicBool, AtomicPtr, Ordering},
     task::{Context, Poll, RawWaker, RawWakerVTable, Waker},
 };
 
@@ -18,6 +18,7 @@ const MAX_TASKS: usize = 32;
 static EXECUTOR: AtomicPtr<LocalExecutor<'static, MAX_TASKS>> =
     AtomicPtr::new(std::ptr::null_mut());
 
+/// Initializes the executor.
 pub fn init() {
     let executor = Box::leak(Box::new(LocalExecutor::<MAX_TASKS>::new()));
     EXECUTOR.store(executor as *mut _, std::sync::atomic::Ordering::SeqCst);
@@ -25,9 +26,7 @@ pub fn init() {
 }
 
 /// Spawns an asynchronous task
-///
-/// TODO: automatically clean up activity tasks when an activity is ended
-/// (e.g. home button press).
+/// Should be dropped and stopped when the parent thread is dropped.
 pub fn spawn<F, T>(fut: F) -> Task<T>
 where
     F: Future<Output = T> + Send + 'static,
@@ -45,18 +44,22 @@ fn executor() -> &'static LocalExecutor<'static, MAX_TASKS> {
     unsafe { &*EXECUTOR.load(std::sync::atomic::Ordering::SeqCst) }
 }
 
-/// We need a waker for the Context API, in turn needed by the Future::poll API
-/// Since the actual waiting for our polling function happens on the host
-/// with its own executor, we just need a simple waker to satisfy the API.
-///
-/// # Safety
-/// The pointer is null and no allocation happens even on cloning.
-/// Most callbacks are no-ops, so no mutation happens on the waker.
-fn noop_waker() -> Waker {
+/// Set to true when the signal waker is called, meaning edge_executor has at least 1
+/// task ready to run.
+static WOKEN: AtomicBool = AtomicBool::new(false);
+
+/// The signal waker is passed as the outer Context to executor().run().
+/// This is what will let the executor signal that there is a task ready.
+/// In this case, running the polling a second time will wake those tasks.
+fn signal_waker() -> Waker {
     const VTABLE: RawWakerVTable = RawWakerVTable::new(
         |_| RawWaker::new(std::ptr::null(), &VTABLE),
-        |_| {},
-        |_| {},
+        |_| {
+            WOKEN.store(true, Ordering::Relaxed);
+        },
+        |_| {
+            WOKEN.store(true, Ordering::Relaxed);
+        },
         |_| {},
     );
     unsafe { Waker::from_raw(RawWaker::new(std::ptr::null(), &VTABLE)) }
@@ -64,33 +67,42 @@ fn noop_waker() -> Waker {
 
 pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
     let mut top = pin!(executor().run(fut));
-    let waker = noop_waker();
+    let waker = signal_waker();
     let mut cx = Context::from_waker(&waker);
 
     loop {
-        // Poll futures first so they can register their subscriptions (e.g. button
-        // receivers) before we block waiting for the next event.
-        // Waiting is done below on the native host thread during boppo_wasm_poll
-        // which waits for the next button event
+        // Set WOKEN to false at each polling loop iteration so that it skips
+        // boppo_wasm_poll only if an executor-handled task is ready (timers)
+        WOKEN.store(false, Ordering::Relaxed);
+
+        // Poll all ready tasks and the main future. Any task that becomes ready
+        // during this poll (e.g. via spawn) will call the signal waker, which in turn sets
+        // WOKEN to true.
         if let Poll::Ready(v) = top.as_mut().poll(&mut cx) {
             return v;
         }
-        let next_timeout = next_timeout();
-        // Block until the next host event or next sleep deadline, then wake the futures above.
-        let raw = unsafe { boppo_wasm_poll(next_timeout) };
 
-        // The raw_wasm_code is an i32 representing a ButtonEvent if it's >= 0, a timeout if
-        // it's equal to -1, and a closed channel if it's equal to -2 that should exit early.
+        // If WOKEN was set during the poll, at least one task is queued and ready.
+        // In this case we re-poll immediately, skipping boppo_wasm_poll:
+        // this ensures timers are set.
+        if WOKEN.load(Ordering::Relaxed) {
+            continue;
+        }
+
+        // No tasks are ready. Block until the next host event or timer.
+        // If no timer is set up, next_timeout returns -1, which polls indefinitely.
+        let raw = unsafe { boppo_wasm_poll(next_timeout()) };
         match raw {
             e if e >= 0 => {
+                // Means a ButtonEvent was received
                 register_event(e);
             }
             -1 => {
-                // Timeout.
+                // -1 is used to signal polling ended on timeout (timer)
                 wake_and_clean_expired_timers();
             }
             _ => {
-                // -2 or anything else : host channel got disconnected.
+                // Anything else means the host disconnected, which should exit the activity.
                 std::process::exit(0);
             }
         }
