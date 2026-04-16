@@ -10,10 +10,9 @@ use std::{
 
 use edge_executor::{LocalExecutor, Task};
 
-use crate::hal::{
-    buttons::{boppo_wasm_poll, register_event},
-    timer::{next_timeout, wake_and_clean_expired_timers},
-};
+use crate::host_ffi::buttons::{boppo_wasm_poll, register_event};
+
+use crate::timer::{next_timeout, wake_and_clean_expired_timers};
 
 const MAX_TASKS: usize = 32;
 static EXECUTOR: AtomicPtr<LocalExecutor<'static, MAX_TASKS>> =
