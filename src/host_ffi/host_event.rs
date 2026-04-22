@@ -66,3 +66,9 @@ impl From<&HostEvent> for i64 {
         i64::from_le_bytes(buffer)
     }
 }
+
+impl From<HostEvent> for i64 {
+    fn from(value: HostEvent) -> Self {
+        i64::from(&value)
+    }
+}
