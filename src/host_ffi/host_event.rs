@@ -4,7 +4,8 @@ use boppo_core::ButtonEvent;
 pub enum HostEvent {
     Exit,
     Button(ButtonEvent),
-    SoundEvent,
+    Audio,
+    Timeout,
 }
 
 impl HostEvent {
@@ -12,7 +13,8 @@ impl HostEvent {
         match self {
             Self::Exit => 0,
             Self::Button(_) => 1,
-            Self::SoundEvent => 2,
+            Self::Audio => 2,
+            Self::Timeout => 3,
         }
     }
 
@@ -21,7 +23,8 @@ impl HostEvent {
         match self {
             Self::Button(b) => b.as_u16().to_le_bytes().to_vec(),
             Self::Exit => Vec::new(),
-            Self::SoundEvent => todo!(),
+            Self::Audio => todo!(),
+            Self::Timeout => Vec::new(),
         }
     }
 }
@@ -42,6 +45,7 @@ impl TryFrom<i64> for HostEvent {
                 ))))
             }
             2 => todo!(),
+            3 => Ok(Self::Timeout),
             n => Err(format!("Unknown event type {n}")),
         }
     }
