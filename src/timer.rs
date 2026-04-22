@@ -53,6 +53,7 @@ impl Driver for BoppoWasmDriver {
     }
 }
 
+#[cfg(feature = "wasm_client")]
 time_driver_impl!(static DRIVER : BoppoWasmDriver = BoppoWasmDriver);
 
 /// Removes and wakes expired timers

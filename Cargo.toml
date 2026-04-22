@@ -3,6 +3,10 @@ name = "boppo_wasm_activity"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+default = ["wasm_client"]
+wasm_client = []
+
 [dependencies]
 boppo_core = {path = "../device_software/libs/boppo_core"}
 edge-executor = "0.4.1"
