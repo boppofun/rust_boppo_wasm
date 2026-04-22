@@ -3,29 +3,11 @@ use std::sync::OnceLock;
 use boppo_core::ButtonEvent;
 use tokio::sync::broadcast;
 
-#[link(wasm_import_module = "host")]
-unsafe extern "C" {
-    /// Polling function for Button events with optionnal timeout.
-    /// If timeout_ms <= 0, poll will happen indefinitely.
-    /// This can be used to poll for button events or wait a certain time if not event was received
-    /// in between.
-    /// Returns a ButtonEvent u16 representation (>= 0) on any button event, -1 on timeout, -2 if channel diconnected early.
-    pub fn boppo_wasm_poll(timeout_ms: i32) -> i32;
-}
-
 static BUTTON_SENDER: OnceLock<broadcast::Sender<ButtonEvent>> = OnceLock::new();
 
 /// Registers an event to an event queue when a button event is sent from the host
-pub fn register_event(raw_wasm_code: i32) {
-    match raw_wasm_code {
-        e if e >= 0 => {
-            let event = ButtonEvent::from_u16(raw_wasm_code as u16);
-            let _ = BUTTON_SENDER.get().unwrap().send(event);
-        }
-        _ => {
-            unreachable!("An invalid button event was sent to register_event");
-        }
-    }
+pub fn register_event(event: ButtonEvent) {
+    let _ = BUTTON_SENDER.get().unwrap().send(event);
 }
 
 pub fn init() {

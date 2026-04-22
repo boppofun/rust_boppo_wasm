@@ -8,9 +8,13 @@ use std::{
     task::{Context, Poll, RawWaker, RawWakerVTable, Waker},
 };
 
+use boppo_core::log;
 use edge_executor::{LocalExecutor, Task};
 
-use crate::host_ffi::buttons::{boppo_wasm_poll, register_event};
+use crate::{
+    HostEvent,
+    host_ffi::{buttons::register_event, host_event::boppo_wasm_poll},
+};
 
 use crate::timer::{next_timeout, wake_and_clean_expired_timers};
 
@@ -91,16 +95,11 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
 
         // No tasks are ready. Block until the next host event or timer.
         // If no timer is set up, next_timeout returns -1, which polls indefinitely.
-        let raw = unsafe { boppo_wasm_poll(next_timeout()) };
+        let raw: Result<HostEvent, String> = unsafe { boppo_wasm_poll(next_timeout()) }.try_into();
         match raw {
-            e if e >= 0 => {
-                // Means a ButtonEvent was received
-                register_event(e);
-            }
-            -1 => {
-                // -1 is used to signal polling ended on timeout (timer)
-                wake_and_clean_expired_timers();
-            }
+            Err(e) => log::error!("Received unrecognized event from host : {e}"),
+            Ok(HostEvent::Button(e)) => register_event(e),
+            Ok(HostEvent::Timeout) => wake_and_clean_expired_timers(),
             _ => {
                 // Anything else means the host disconnected, which should exit the activity.
                 std::process::exit(0);
