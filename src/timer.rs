@@ -6,7 +6,7 @@ use embassy_time_driver::Driver;
 use embassy_time_driver::time_driver_impl;
 
 thread_local! {
-    static TIMERS: RefCell<BinaryHeap<TimerWithWaker>> = RefCell::new(BinaryHeap::new());
+    static TIMERS: RefCell<BinaryHeap<TimerWithWaker>> = const { RefCell::new(BinaryHeap::new()) };
 }
 
 static START: OnceLock<Instant> = OnceLock::new();
@@ -43,7 +43,7 @@ struct BoppoWasmDriver;
 
 impl Driver for BoppoWasmDriver {
     fn now(&self) -> u64 {
-        START.get_or_init(|| Instant::now()).elapsed().as_micros() as u64
+        START.get_or_init(Instant::now).elapsed().as_micros() as u64
     }
 
     fn schedule_wake(&self, at: u64, waker: &Waker) {
@@ -66,7 +66,7 @@ pub fn wake_and_clean_expired_timers() {
     TIMERS.with(|cell| {
         let mut heap = cell.borrow_mut();
         let now = BoppoWasmDriver.now();
-        while heap.peek().map_or(false, |e| e.at <= now) {
+        while heap.peek().is_some_and(|e| e.at <= now) {
             if let Some(timer_with_waker) = heap.pop() {
                 timer_with_waker.waker.wake();
             } else {
@@ -88,7 +88,7 @@ pub fn next_timeout() -> i32 {
         if timer_with_waker.at <= now {
             return 1;
         }
-        let result = (((timer_with_waker.at - now) / 1000).min(i32::MAX as u64) as i32).max(1);
-        result
+
+        (((timer_with_waker.at - now) / 1000).min(i32::MAX as u64) as i32).max(1)
     })
 }

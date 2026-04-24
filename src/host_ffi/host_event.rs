@@ -29,7 +29,7 @@ impl HostEvent {
     }
 
     /// Payload should never exceed 56 bits.
-    fn payload<'a>(&self) -> Vec<u8> {
+    fn payload(&self) -> Vec<u8> {
         match self {
             Self::Button(b) => b.as_u16().to_le_bytes().to_vec(),
             Self::Exit => Vec::new(),
