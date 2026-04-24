@@ -13,7 +13,7 @@ use edge_executor::{LocalExecutor, Task};
 
 use crate::{
     HostEvent,
-    host_ffi::{buttons::register_event, host_event::boppo_wasm_poll},
+    host_ffi::{audio::AUDIO_SENDER, buttons::register_event, host_event::boppo_wasm_poll},
 };
 
 use crate::timer::{next_timeout, wake_and_clean_expired_timers};
@@ -103,6 +103,9 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
             Err(e) => log::error!("Received unrecognized event from host : {e}"),
             Ok(HostEvent::Button(e)) => register_event(e),
             Ok(HostEvent::Timeout) => wake_and_clean_expired_timers(),
+            Ok(HostEvent::Audio(event)) => {
+                AUDIO_SENDER.get().unwrap().send(event).unwrap();
+            }
             _ => {
                 // Anything else means the host disconnected, which should exit the activity.
                 std::process::exit(0);

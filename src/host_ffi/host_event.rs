@@ -1,5 +1,7 @@
 use boppo_core::ButtonEvent;
 
+use crate::host_ffi::audio::AudioEvent;
+
 #[link(wasm_import_module = "host")]
 unsafe extern "C" {
     /// Polling function for Button events with optionnal timeout.
@@ -14,7 +16,7 @@ unsafe extern "C" {
 pub enum HostEvent {
     Exit,
     Button(ButtonEvent),
-    Audio,
+    Audio(AudioEvent),
     Timeout,
 }
 
@@ -23,7 +25,7 @@ impl HostEvent {
         match self {
             Self::Exit => 0,
             Self::Button(_) => 1,
-            Self::Audio => 2,
+            Self::Audio(_) => 2,
             Self::Timeout => 3,
         }
     }
@@ -33,7 +35,7 @@ impl HostEvent {
         match self {
             Self::Button(b) => b.as_u16().to_le_bytes().to_vec(),
             Self::Exit => Vec::new(),
-            Self::Audio => todo!(),
+            Self::Audio(_) => todo!(),
             Self::Timeout => Vec::new(),
         }
     }
