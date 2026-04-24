@@ -69,6 +69,9 @@ fn signal_waker() -> Waker {
     unsafe { Waker::from_raw(RawWaker::new(std::ptr::null(), &VTABLE)) }
 }
 
+/// Blocks on a future.
+/// WARNING : this should not be called from inside the async activity.
+/// It is only meant to be used for async runtime initialization.
 pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
     let mut top = pin!(executor().run(fut));
     let waker = signal_waker();
