@@ -1,6 +1,9 @@
 use std::{cell::RefCell, collections::BinaryHeap, sync::OnceLock, task::Waker, time::Instant};
 
-use embassy_time_driver::{Driver, time_driver_impl};
+use embassy_time_driver::Driver;
+
+#[cfg(feature = "wasm_client")]
+use embassy_time_driver::time_driver_impl;
 
 thread_local! {
     static TIMERS: RefCell<BinaryHeap<TimerWithWaker>> = RefCell::new(BinaryHeap::new());
