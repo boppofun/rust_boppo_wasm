@@ -3,7 +3,7 @@ use boppo_core::ButtonEvent;
 #[link(wasm_import_module = "host")]
 unsafe extern "C" {
     /// Polling function for Button events with optionnal timeout.
-    /// If timeout_ms <= 0, poll will happen indefinitely.
+    /// If timeout_ms < 0, poll will happen indefinitely.
     /// This can be used to poll for button events or wait a certain time if not event was received
     /// in between.
     /// Returns a HostEvent i64 representation.
