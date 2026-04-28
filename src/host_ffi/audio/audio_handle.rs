@@ -37,12 +37,27 @@ pub fn init() {
 
 #[cfg(feature = "wasm_client")]
 impl AudioHandle {
-    pub fn open(path: &str) -> Result<Self, ()> {
-        let handle = unsafe { boppo_wasm_open_sound_file(path.as_ptr(), path.len()) };
-        if handle < 0 {
+    pub async fn open(path: &str) -> Result<Self, ()> {
+        let req = unsafe { boppo_wasm_open_sound_file(path.as_ptr(), path.len()) };
+        if req < 0 {
             Err(())
         } else {
-            Ok(Self(handle, AUDIO_SENDER.get().unwrap().subscribe()))
+            let mut event_receiver = AUDIO_SENDER.get().unwrap().subscribe();
+            loop {
+                let event = event_receiver.recv().await;
+                match event {
+                    Ok(AudioEvent::Opened { req_id, handle }) => {
+                        if req_id == req {
+                            return Ok(Self(handle, event_receiver));
+                        }
+                    }
+                    Err(e) => {
+                        log::error!("Error receiving audio event. : {e}");
+                        return Err(());
+                    }
+                    _ => {}
+                }
+            }
         }
     }
 
