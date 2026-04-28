@@ -5,8 +5,8 @@ use tokio::sync::broadcast;
 
 static BUTTON_SENDER: OnceLock<broadcast::Sender<ButtonEvent>> = OnceLock::new();
 
-/// Registers an event to an event queue when a button event is sent from the host
-pub fn register_event(event: ButtonEvent) {
+///Broadcasts a button event to all listeners registered through boppo_core's HAL, on the wasm side.
+pub fn broadcast_event(event: ButtonEvent) {
     let _ = BUTTON_SENDER.get().unwrap().send(event);
 }
 

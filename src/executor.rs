@@ -13,7 +13,7 @@ use edge_executor::{LocalExecutor, Task};
 
 use crate::{
     HostEvent,
-    host_ffi::{buttons::register_event, host_event::boppo_wasm_poll},
+    host_ffi::{buttons::broadcast_event, host_event::boppo_wasm_poll},
 };
 
 use crate::timer::{next_timeout, wake_and_clean_expired_timers};
@@ -101,7 +101,7 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
         let raw: Result<HostEvent, String> = unsafe { boppo_wasm_poll(next_timeout()) }.try_into();
         match raw {
             Err(e) => log::error!("Received unrecognized event from host : {e}"),
-            Ok(HostEvent::Button(e)) => register_event(e),
+            Ok(HostEvent::Button(e)) => broadcast_event(e),
             Ok(HostEvent::Timeout) => wake_and_clean_expired_timers(),
             _ => {
                 // Anything else means the host disconnected, which should exit the activity.
