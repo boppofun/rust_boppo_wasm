@@ -8,14 +8,7 @@ impl log::Log for WasmLogger {
     }
 
     fn log(&self, record: &log::Record) {
-        match record.level() {
-            log::Level::Info | log::Level::Trace | log::Level::Debug => {
-                println!("[{}] WASM Activity : {}", record.level(), record.args());
-            }
-            _ => {
-                eprintln!("[{}] WASM Activity : {}", record.level(), record.args());
-            }
-        }
+        eprintln!("[{}] WASM Activity : {}", record.level(), record.args());
     }
 
     fn flush(&self) {}
