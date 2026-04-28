@@ -13,17 +13,17 @@ pub(crate) static AUDIO_SENDER: OnceLock<broadcast::Sender<AudioEvent>> = OnceLo
 unsafe extern "C" {
     /// Opens a sound file on the host
     /// Returns an integer ID for the matching sound.
-    fn boppo_wasm_open_sound_file(path_ptr: *const u8, str_length: usize) -> i32;
+    fn boppo_wasm_open_audio_file(path_ptr: *const u8, str_length: usize) -> i32;
 
     /// Plays an open sound based on its ID.
-    fn boppo_wasm_play_sound(sound_id: i32);
-
+    fn boppo_wasm_play_audio(audio_handle: i32);
+    /*
     /// Sets a parameter to control the sound : volume, pause, etc.
-    fn boppo_wasm_set_sound_parameter(sound_id: i32, parameter: i32, value: f32);
+    fn boppo_wasm_set_audio_parameter(sound_id: i32, parameter: i32, value: f32);
 
-    fn boppo_wasm_stop_sound(sound_id: i32);
+    fn boppo_wasm_stop_audio(sound_id: i32);
 
-    fn boppo_wasm_unload_sound_file(sound_id: i32);
+    fn boppo_wasm_unload_audio_file(sound_id: i32);*/
 }
 
 #[cfg(feature = "wasm_client")]
@@ -38,7 +38,7 @@ pub fn init() {
 #[cfg(feature = "wasm_client")]
 impl AudioHandle {
     pub async fn open(path: &str) -> Result<Self, ()> {
-        let req = unsafe { boppo_wasm_open_sound_file(path.as_ptr(), path.len()) };
+        let req = unsafe { boppo_wasm_open_audio_file(path.as_ptr(), path.len()) };
         if req < 0 {
             Err(())
         } else {
@@ -62,7 +62,7 @@ impl AudioHandle {
     }
 
     pub fn play(&self) {
-        unsafe { boppo_wasm_play_sound(self.0) }
+        unsafe { boppo_wasm_play_audio(self.0) }
     }
 
     pub async fn play_and_notify(&mut self) {
@@ -84,9 +84,9 @@ impl AudioHandle {
         }
     }
 
-    pub fn set_paused(&self, paused: bool) {
+    /*pub fn set_paused(&self, paused: bool) {
         unsafe {
-            boppo_wasm_set_sound_parameter(
+            boppo_wasm_set_audio_parameter(
                 self.0,
                 AudioParameter::Pause as i32,
                 if paused { 1. } else { 0. },
@@ -96,28 +96,28 @@ impl AudioHandle {
 
     pub fn set_volume(&self, volume: f32) {
         unsafe {
-            boppo_wasm_set_sound_parameter(self.0, AudioParameter::Volume as i32, volume);
+            boppo_wasm_set_audio_parameter(self.0, AudioParameter::Volume as i32, volume);
         }
     }
 
     pub fn set_speed(&self, speed: f32) {
         unsafe {
-            boppo_wasm_set_sound_parameter(self.0, AudioParameter::Speed as i32, speed);
+            boppo_wasm_set_audio_parameter(self.0, AudioParameter::Speed as i32, speed);
         }
     }
 
     pub fn stop(&self) {
         unsafe {
-            boppo_wasm_stop_sound(self.0);
+            boppo_wasm_stop_audio(self.0);
         }
-    }
+    }*/
 }
 
 #[cfg(feature = "wasm_client")]
 impl Drop for AudioHandle {
     fn drop(&mut self) {
         unsafe {
-            boppo_wasm_unload_sound_file(self.0);
+            //boppo_wasm_unload_sound_file(self.0);
         }
     }
 }
