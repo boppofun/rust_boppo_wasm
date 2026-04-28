@@ -6,8 +6,10 @@ pub use audio_event::AudioEvent;
 use boppo_core::log;
 use tokio::sync::{broadcast, broadcast::Receiver};
 
+#[cfg(feature = "wasm_client")]
 pub(crate) static AUDIO_SENDER: OnceLock<broadcast::Sender<AudioEvent>> = OnceLock::new();
 
+#[cfg(feature = "wasm_client")]
 #[link(wasm_import_module = "host")]
 unsafe extern "C" {
     /// Opens a sound file on the host
@@ -25,8 +27,10 @@ unsafe extern "C" {
     fn unload_sound_file(sound_id: i32);
 }
 
+#[cfg(feature = "wasm_client")]
 pub struct Sound(i32, Receiver<AudioEvent>);
 
+#[cfg(feature = "wasm_client")]
 #[repr(i32)]
 pub enum SoundParameter {
     Pause = 0,
@@ -34,11 +38,13 @@ pub enum SoundParameter {
     Speed = 3,
 }
 
+#[cfg(feature = "wasm_client")]
 pub fn init() {
     let (sender, _) = broadcast::channel(16);
     let _ = AUDIO_SENDER.set(sender);
 }
 
+#[cfg(feature = "wasm_client")]
 impl Sound {
     pub fn open(path: &str) -> Result<Self, ()> {
         let handle = unsafe { open_sound_file(path.as_ptr(), path.len()) };
@@ -89,6 +95,7 @@ impl Sound {
     }
 }
 
+#[cfg(feature = "wasm_client")]
 impl Drop for Sound {
     fn drop(&mut self) {
         unsafe {

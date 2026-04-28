@@ -8,7 +8,7 @@ use boppo_core::{Framebuffer, Lights, NUM_LIGHTS};
 #[link(wasm_import_module = "host")]
 unsafe extern "C" {
     /// Calls flush on the host
-    fn boppo_wasm_flush(framebuffer_colors: *const c_void);
+    fn boppo_wasm_set_and_flush_lights(framebuffer_colors: *const c_void);
 }
 
 pub struct WasmHalLights {
@@ -30,7 +30,7 @@ impl HalLights for WasmHalLights {
 
     fn flush(&mut self) {
         unsafe {
-            boppo_wasm_flush(
+            boppo_wasm_set_and_flush_lights(
                 &self.framebuffer.colors as *const [Rgb<u8>; NUM_LIGHTS] as *const c_void,
             );
         }

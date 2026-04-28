@@ -13,7 +13,7 @@ use edge_executor::{LocalExecutor, Task};
 
 use crate::{
     HostEvent,
-    host_ffi::{audio::AUDIO_SENDER, buttons::register_event, host_event::boppo_wasm_poll},
+    host_ffi::{audio::AUDIO_SENDER, buttons::broadcast_event, host_event::boppo_wasm_poll},
 };
 
 use crate::timer::{next_timeout, wake_and_clean_expired_timers};
@@ -25,12 +25,11 @@ static EXECUTOR: AtomicPtr<LocalExecutor<'static, MAX_TASKS>> =
 /// Initializes the executor.
 pub fn init() {
     let executor = Box::leak(Box::new(LocalExecutor::<MAX_TASKS>::new()));
-    EXECUTOR.store(executor as *mut _, std::sync::atomic::Ordering::SeqCst);
+    EXECUTOR.store(executor as *mut _, std::sync::atomic::Ordering::Relaxed);
     boppo_core::hal::set_executor(executor);
 }
 
 /// Spawns an asynchronous task
-/// Should be dropped and stopped when the parent thread is dropped.
 pub fn spawn<F, T>(fut: F) -> Task<T>
 where
     F: Future<Output = T> + Send + 'static,
@@ -39,11 +38,13 @@ where
     executor().spawn(fut)
 }
 
-/// Gets the executor from the atomic pointer.
+/// Gets the global WASM Executor.
 ///
 /// # Safety
-/// This should not be called twice without dropping first,
-/// so block_on should never be called from within block_on.
+///
+/// While LocalExecutor is !Sync, its "run" method uses Sync primitives
+///
+/// We are in a single-threaded context, so no data race can happen
 fn executor() -> &'static LocalExecutor<'static, MAX_TASKS> {
     unsafe { &*EXECUTOR.load(std::sync::atomic::Ordering::SeqCst) }
 }
@@ -69,17 +70,19 @@ fn signal_waker() -> Waker {
     unsafe { Waker::from_raw(RawWaker::new(std::ptr::null(), &VTABLE)) }
 }
 
+#[doc(hidden)]
 /// Blocks on a future.
-/// WARNING : this should not be called from inside the async activity.
+/// Intended to be used to launch an async function from the main (sync) function of the module.
+/// WARNING : this should not be called from inside the async activit without the risk for
+/// logical errors.
 /// It is only meant to be used for async runtime initialization.
-pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
+pub fn internal_block_on<T>(fut: impl Future<Output = T>) -> T {
     let mut top = pin!(executor().run(fut));
     let waker = signal_waker();
     let mut cx = Context::from_waker(&waker);
 
     loop {
-        // Set WOKEN to false at each polling loop iteration so that it skips
-        // boppo_wasm_poll only if an executor-handled task is ready (timers)
+        // Reset before each poll so we can detect if any task wakes during this iteration.
         WOKEN.store(false, Ordering::Relaxed);
 
         // Poll all ready tasks and the main future. Any task that becomes ready
@@ -89,19 +92,18 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
             return v;
         }
 
-        // If WOKEN was set during the poll, at least one task is queued and ready.
-        // In this case we re-poll immediately, skipping boppo_wasm_poll:
-        // this ensures timers are set.
-        if WOKEN.load(Ordering::Relaxed) {
-            continue;
-        }
-
-        // No tasks are ready. Block until the next host event or timer.
-        // If no timer is set up, next_timeout returns -1, which polls indefinitely.
-        let raw: Result<HostEvent, String> = unsafe { boppo_wasm_poll(next_timeout()) }.try_into();
+        // If tasks are ready, use timeout 0 (non-blocking) to avoid potential host event
+        // starvation.
+        // Otherwise block until the next event or timer (-1 if no timer is pending).
+        let timeout = if WOKEN.load(Ordering::Relaxed) {
+            0
+        } else {
+            next_timeout()
+        };
+        let raw: Result<HostEvent, String> = unsafe { boppo_wasm_poll(timeout) }.try_into();
         match raw {
-            Err(e) => log::error!("Received unrecognized event from host : {e}"),
-            Ok(HostEvent::Button(e)) => register_event(e),
+            Err(e) => log::debug!("Received unrecognized event from host : {e}"),
+            Ok(HostEvent::Button(e)) => broadcast_event(e),
             Ok(HostEvent::Timeout) => wake_and_clean_expired_timers(),
             Ok(HostEvent::Audio(event)) => {
                 AUDIO_SENDER.get().unwrap().send(event).unwrap();
