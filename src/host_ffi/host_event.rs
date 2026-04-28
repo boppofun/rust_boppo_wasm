@@ -21,6 +21,15 @@ pub enum HostEvent {
     Timeout,
 }
 
+// i64 wire layout (little-endian):
+//   byte 0:   HostEvent type (0=Exit, 1=Button, 2=Audio, 3=Timeout)
+//   bytes 1-7: payload
+//
+// Audio payload:
+//   bytes 1-2: req_id as i16 (Opened only; 0 for Finished)
+//   byte  3:   AudioEvent sub-type (0=Opened, 1=Finished)
+//   bytes 4-7: handle as i32
+
 impl HostEvent {
     fn event_type_u8(&self) -> u8 {
         match self {
@@ -37,7 +46,17 @@ impl HostEvent {
         match self {
             Self::Button(b) => result[5..7].copy_from_slice(&b.as_u16().to_le_bytes()),
             Self::Exit => {}
-            Self::Audio(_) => todo!(),
+            Self::Audio(audio_event) => match audio_event {
+                AudioEvent::Opened { req_id, handle } => {
+                    result[0..2].copy_from_slice(&(*req_id as i16).to_le_bytes());
+                    result[2] = 0;
+                    result[3..7].copy_from_slice(&handle.to_le_bytes());
+                }
+                AudioEvent::Finished(handle) => {
+                    result[2] = 1;
+                    result[3..7].copy_from_slice(&handle.to_le_bytes());
+                }
+            },
             Self::Timeout => {}
         }
         result
@@ -59,7 +78,18 @@ impl TryFrom<i64> for HostEvent {
                     u16_buffer,
                 ))))
             }
-            2 => todo!(),
+            2 => {
+                let audio_sub_type = buffer[3];
+                let handle = i32::from_le_bytes(buffer[4..8].try_into().unwrap());
+                match audio_sub_type {
+                    0 => {
+                        let req_id = i16::from_le_bytes(buffer[1..3].try_into().unwrap()) as i32;
+                        Ok(Self::Audio(AudioEvent::Opened { req_id, handle }))
+                    }
+                    1 => Ok(Self::Audio(AudioEvent::Finished(handle))),
+                    n => Err(format!("Unknown audio event sub-type {n}")),
+                }
+            }
             3 => Ok(Self::Timeout),
             n => Err(format!("Unknown event type {n}")),
         }
