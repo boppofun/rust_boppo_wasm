@@ -25,7 +25,7 @@ static EXECUTOR: AtomicPtr<LocalExecutor<'static, MAX_TASKS>> =
 /// Initializes the executor.
 pub fn init() {
     let executor = Box::leak(Box::new(LocalExecutor::<MAX_TASKS>::new()));
-    EXECUTOR.store(executor as *mut _, std::sync::atomic::Ordering::SeqCst);
+    EXECUTOR.store(executor as *mut _, std::sync::atomic::Ordering::Relaxed);
     boppo_core::hal::set_executor(executor);
 }
 
