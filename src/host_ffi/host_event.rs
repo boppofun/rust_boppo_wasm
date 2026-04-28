@@ -1,5 +1,6 @@
 use boppo_core::ButtonEvent;
 
+#[cfg(feature = "wasm_client")]
 #[link(wasm_import_module = "host")]
 unsafe extern "C" {
     /// Polling function for Button events with optionnal timeout.
