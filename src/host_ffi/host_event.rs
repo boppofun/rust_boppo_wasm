@@ -33,7 +33,7 @@ impl HostEvent {
     fn payload(&self) -> [u8; 7] {
         let mut result = [0u8; 7];
         match self {
-            Self::Button(b) => result[6..8].copy_from_slice(&b.as_u16().to_le_bytes()),
+            Self::Button(b) => result[5..7].copy_from_slice(&b.as_u16().to_le_bytes()),
             Self::Exit => {}
             Self::Audio => todo!(),
             Self::Timeout => {}
