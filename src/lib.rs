@@ -15,7 +15,11 @@ pub use executor::internal_block_on;
 #[cfg(feature = "wasm_client")]
 pub use executor::spawn;
 
+pub use host_ffi::audio::{AudioEvent, AudioParameter};
 pub use host_ffi::host_event::HostEvent;
+
+#[cfg(feature = "wasm_client")]
+pub use host_ffi::audio::AudioHandle;
 
 #[cfg(feature = "wasm_client")]
 pub fn init() {
