@@ -108,8 +108,8 @@ pub fn internal_block_on<T>(fut: impl Future<Output = T>) -> T {
             Ok(HostEvent::Audio(event)) => {
                 AUDIO_SENDER.get().unwrap().send(event).unwrap();
             }
-            _ => {
-                // Anything else means the host disconnected, which should exit the activity.
+            Ok(HostEvent::Exit) => {
+                // Host requested exit.
                 std::process::exit(0);
             }
         }

@@ -56,6 +56,10 @@ impl HostEvent {
                     result[2] = 1;
                     result[3..7].copy_from_slice(&handle.to_le_bytes());
                 }
+                AudioEvent::BadHandleError(handle) => {
+                    result[2] = 2;
+                    result[3..7].copy_from_slice(&handle.to_le_bytes());
+                }
             },
             Self::Timeout => {}
         }

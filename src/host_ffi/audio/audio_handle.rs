@@ -1,4 +1,4 @@
-use std::sync::OnceLock;
+use std::{error::Error, fmt::Display, sync::OnceLock};
 
 use super::AudioEvent;
 use boppo_core::log;
@@ -7,6 +7,17 @@ use tokio::sync::{broadcast, broadcast::Receiver};
 use crate::host_ffi::audio::AudioParameter;
 
 pub(crate) static AUDIO_SENDER: OnceLock<broadcast::Sender<AudioEvent>> = OnceLock::new();
+
+#[derive(Debug)]
+pub struct BadHandleError;
+
+impl Display for BadHandleError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("Incorrect Audio Handle.")
+    }
+}
+
+impl Error for BadHandleError {}
 
 #[cfg(feature = "wasm_client")]
 #[link(wasm_import_module = "host")]
@@ -21,13 +32,23 @@ unsafe extern "C" {
     /// Sets a parameter to control the sound : volume, pause, etc.
     fn boppo_wasm_set_audio_parameter(sound_id: i32, parameter: i32, value: f32);
 
-    fn boppo_wasm_stop_audio(sound_id: i32);
+    fn boppo_wasm_stop_audio(sound_id: i32);*/
 
-    fn boppo_wasm_unload_audio_file(sound_id: i32);*/
+    fn boppo_wasm_unload_audio(sound_id: i32);
 }
 
+/// Represents an audio file
+// This is meant to hold "distant ownership" of an audio file
+// on the host thread. Dropping it will clear the audio file on
+// the host side. The interface is made so that playing or awaiting
+// completion of this struct effectively drops it, triggering clean-up on the host
+// so that entries don't pile up.
 #[cfg(feature = "wasm_client")]
 pub struct AudioHandle(i32, Receiver<AudioEvent>);
+
+/// Represents a detached playing audio file that might have already been unloaded.
+#[cfg(feature = "wasm_client")]
+pub struct DetachedAudioHandle(Option<AudioHandle>);
 
 #[cfg(feature = "wasm_client")]
 pub fn init() {
@@ -61,63 +82,116 @@ impl AudioHandle {
         }
     }
 
-    pub fn play(&self) {
-        unsafe { boppo_wasm_play_audio(self.0) }
+    pub fn play(self) -> DetachedAudioHandle {
+        unsafe {
+            boppo_wasm_play_audio(self.0);
+        }
+        DetachedAudioHandle(Some(self))
     }
 
-    pub async fn play_and_notify(&mut self) {
-        self.play();
+    async fn internal_play_and_notify(&mut self) -> Result<(), BadHandleError> {
+        unsafe {
+            boppo_wasm_play_audio(self.0);
+        }
         loop {
             let event = self.1.recv().await;
             match event {
                 Ok(AudioEvent::Finished(handle)) => {
                     if handle == self.0 {
-                        break;
+                        break Ok(());
+                    }
+                }
+                Ok(AudioEvent::BadHandleError(handle)) => {
+                    if handle == self.0 {
+                        break Err(BadHandleError);
                     }
                 }
                 Err(e) => {
-                    log::error!("Error receiving audio event. : {e}");
-                    break;
+                    // If we do our job correctly, this should never happen
+                    log::error!("Error receiving audio event : {e}");
+
+                    // Instead of exposing an internal error to the user, just exist the activity.
+                    std::process::exit(1);
                 }
                 _ => {}
             }
         }
     }
 
-    /*pub fn set_paused(&self, paused: bool) {
-        unsafe {
+    pub async fn play_and_notify(mut self) {
+        let _ = self.internal_play_and_notify().await;
+    }
+
+    pub fn set_paused(&self, paused: bool) {
+        todo!()
+        /*unsafe {
             boppo_wasm_set_audio_parameter(
                 self.0,
                 AudioParameter::Pause as i32,
                 if paused { 1. } else { 0. },
             );
-        }
+        }*/
     }
 
     pub fn set_volume(&self, volume: f32) {
-        unsafe {
+        todo!()
+        /*unsafe {
             boppo_wasm_set_audio_parameter(self.0, AudioParameter::Volume as i32, volume);
-        }
+        }*/
     }
 
     pub fn set_speed(&self, speed: f32) {
+        todo!()
+        /*
         unsafe {
             boppo_wasm_set_audio_parameter(self.0, AudioParameter::Speed as i32, speed);
         }
+        */
     }
 
-    pub fn stop(&self) {
+    pub fn stop(self) {
+        todo!();
+        /*
         unsafe {
             boppo_wasm_stop_audio(self.0);
         }
-    }*/
+        */
+    }
 }
 
 #[cfg(feature = "wasm_client")]
 impl Drop for AudioHandle {
     fn drop(&mut self) {
         unsafe {
-            //boppo_wasm_unload_sound_file(self.0);
+            boppo_wasm_unload_audio(self.0);
         }
+    }
+}
+
+impl DetachedAudioHandle {
+    // Wait for this audio to finish. If it is already finished, it resolves immediately.
+    pub async fn notify(mut self) {
+        // Taking the internal handle ensures it is dropped at the end of this function
+        if let Some(mut handle) = self.0.take() {
+            // Wether the future resolves with a Finished or BadHandleError, it means playback is over.
+            let _ = handle.internal_play_and_notify().await;
+        }
+        //Handle already consumed. Do nothing.
+    }
+
+    pub fn try_set_paused(&mut self) -> Result<(), BadHandleError> {
+        todo!()
+    }
+
+    pub fn try_set_volume(&mut self) -> Result<(), BadHandleError> {
+        todo!()
+    }
+
+    pub fn try_set_speed(&mut self) -> Result<(), BadHandleError> {
+        todo!()
+    }
+
+    pub fn stop(mut self) {
+        todo!()
     }
 }
