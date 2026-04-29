@@ -47,17 +47,12 @@ impl HostEvent {
             Self::Button(b) => result[5..7].copy_from_slice(&b.as_u16().to_le_bytes()),
             Self::Exit => {}
             Self::Audio(audio_event) => match audio_event {
-                AudioEvent::Opened { req_id, handle } => {
-                    result[0..2].copy_from_slice(&(*req_id as i16).to_le_bytes());
+                AudioEvent::Finished(handle) => {
                     result[2] = 0;
                     result[3..7].copy_from_slice(&handle.to_le_bytes());
                 }
-                AudioEvent::Finished(handle) => {
-                    result[2] = 1;
-                    result[3..7].copy_from_slice(&handle.to_le_bytes());
-                }
                 AudioEvent::BadHandleError(handle) => {
-                    result[2] = 2;
+                    result[2] = 1;
                     result[3..7].copy_from_slice(&handle.to_le_bytes());
                 }
             },
@@ -86,11 +81,8 @@ impl TryFrom<i64> for HostEvent {
                 let audio_sub_type = buffer[3];
                 let handle = i32::from_le_bytes(buffer[4..8].try_into().unwrap());
                 match audio_sub_type {
-                    0 => {
-                        let req_id = i16::from_le_bytes(buffer[1..3].try_into().unwrap()) as i32;
-                        Ok(Self::Audio(AudioEvent::Opened { req_id, handle }))
-                    }
-                    1 => Ok(Self::Audio(AudioEvent::Finished(handle))),
+                    0 => Ok(Self::Audio(AudioEvent::Finished(handle))),
+                    1 => Ok(Self::Audio(AudioEvent::BadHandleError(handle))),
                     n => Err(format!("Unknown audio event sub-type {n}")),
                 }
             }
