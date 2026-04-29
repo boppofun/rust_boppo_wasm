@@ -1,4 +1,4 @@
-use std::{error::Error, fmt::Display, sync::OnceLock};
+use std::{error::Error, f32, fmt::Display, sync::OnceLock};
 
 use super::AudioEvent;
 use boppo_core::log;
@@ -28,11 +28,11 @@ unsafe extern "C" {
 
     /// Plays an open sound based on its ID.
     fn boppo_wasm_play_audio(audio_handle: i32);
-    /*
+
     /// Sets a parameter to control the sound : volume, pause, etc.
     fn boppo_wasm_set_audio_parameter(sound_id: i32, parameter: i32, value: f32);
 
-    fn boppo_wasm_stop_audio(sound_id: i32);*/
+    fn boppo_wasm_stop_audio(sound_id: i32);
 
     fn boppo_wasm_unload_audio(sound_id: i32);
 }
@@ -122,40 +122,32 @@ impl AudioHandle {
         let _ = self.internal_play_and_notify().await;
     }
 
-    pub fn set_paused(&self, paused: bool) {
-        todo!()
-        /*unsafe {
+    fn set_paused(&self, paused: bool) {
+        unsafe {
             boppo_wasm_set_audio_parameter(
                 self.0,
                 AudioParameter::Pause as i32,
                 if paused { 1. } else { 0. },
             );
-        }*/
+        }
     }
 
     pub fn set_volume(&self, volume: f32) {
-        todo!()
-        /*unsafe {
+        unsafe {
             boppo_wasm_set_audio_parameter(self.0, AudioParameter::Volume as i32, volume);
-        }*/
+        }
     }
 
     pub fn set_speed(&self, speed: f32) {
-        todo!()
-        /*
         unsafe {
             boppo_wasm_set_audio_parameter(self.0, AudioParameter::Speed as i32, speed);
         }
-        */
     }
 
     pub fn stop(self) {
-        todo!();
-        /*
         unsafe {
             boppo_wasm_stop_audio(self.0);
         }
-        */
     }
 }
 
@@ -179,19 +171,36 @@ impl DetachedAudioHandle {
         //Handle already consumed. Do nothing.
     }
 
-    pub fn try_set_paused(&mut self) -> Result<(), BadHandleError> {
-        todo!()
+    pub fn try_set_paused(&mut self, paused: bool) -> Result<(), BadHandleError> {
+        if let Some(handle) = &mut self.0 {
+            handle.set_paused(paused);
+            Ok(())
+        } else {
+            Err(BadHandleError)
+        }
     }
 
-    pub fn try_set_volume(&mut self) -> Result<(), BadHandleError> {
-        todo!()
+    pub fn try_set_volume(&mut self, value: f32) -> Result<(), BadHandleError> {
+        if let Some(handle) = &mut self.0 {
+            handle.set_volume(value);
+            Ok(())
+        } else {
+            Err(BadHandleError)
+        }
     }
 
-    pub fn try_set_speed(&mut self) -> Result<(), BadHandleError> {
-        todo!()
+    pub fn try_set_speed(&mut self, value: f32) -> Result<(), BadHandleError> {
+        if let Some(handle) = &mut self.0 {
+            handle.set_speed(value);
+            Ok(())
+        } else {
+            Err(BadHandleError)
+        }
     }
 
     pub fn stop(mut self) {
-        todo!()
+        if let Some(handle) = self.0.take() {
+            handle.stop();
+        }
     }
 }

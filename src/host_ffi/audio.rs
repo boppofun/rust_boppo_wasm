@@ -6,7 +6,7 @@ mod audio_handle;
 pub use audio_event::AudioEvent;
 
 #[cfg(feature = "wasm_client")]
-pub use audio_handle::{AudioHandle, init};
+pub use audio_handle::{AudioHandle, DetachedAudioHandle, init};
 
 #[cfg(feature = "wasm_client")]
 pub(crate) use audio_handle::AUDIO_SENDER;
@@ -15,5 +15,18 @@ pub(crate) use audio_handle::AUDIO_SENDER;
 pub enum AudioParameter {
     Pause = 0,
     Volume = 1,
-    Speed = 3,
+    Speed = 2,
+}
+
+impl TryFrom<i32> for AudioParameter {
+    type Error = &'static str;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(Self::Pause),
+            1 => Ok(Self::Volume),
+            2 => Ok(Self::Speed),
+            _ => Err("Unknown audio parameter code."),
+        }
+    }
 }
