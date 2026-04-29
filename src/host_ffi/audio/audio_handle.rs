@@ -99,7 +99,6 @@ impl AudioHandle {
                     // Instead of exposing an internal error to the user, just exist the activity.
                     std::process::exit(1);
                 }
-                _ => {}
             }
         }
     }
