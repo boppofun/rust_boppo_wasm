@@ -21,14 +21,20 @@ pub enum HostEvent {
     Timeout,
 }
 
-// i64 wire layout (little-endian):
+// i64 event encoding layout :
 //   byte 0:   HostEvent type (0=Exit, 1=Button, 2=Audio, 3=Timeout)
 //   bytes 1-7: payload
 //
 // Audio payload:
-//   bytes 1-2: req_id as i16 (Opened only; 0 for Finished)
-//   byte  3:   AudioEvent sub-type (0=Opened, 1=Finished)
+//   bytes 1-2: unused as of now
+//   byte  3:   AudioEvent sub-type (0=Finished, 1=BadHandleError)
 //   bytes 4-7: handle as i32
+//
+// ButtonEvent payload:
+//   bytes 1-4: unused as of now
+//   bytes 5-7: event u16 representation
+//
+// No payload for other event types
 
 impl HostEvent {
     fn event_type_u8(&self) -> u8 {
