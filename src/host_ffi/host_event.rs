@@ -43,7 +43,7 @@ impl HostEvent {
 }
 
 impl TryFrom<i64> for HostEvent {
-    type Error = String;
+    type Error = u8;
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
         let buffer = value.to_le_bytes();
@@ -59,7 +59,7 @@ impl TryFrom<i64> for HostEvent {
             }
             2 => todo!(),
             3 => Ok(Self::Timeout),
-            n => Err(format!("Unknown event type {n}")),
+            n => Err(n),
         }
     }
 }
