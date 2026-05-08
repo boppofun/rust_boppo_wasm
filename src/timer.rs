@@ -28,12 +28,13 @@ impl Eq for TimerWithWaker {}
 
 impl PartialOrd for TimerWithWaker {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        other.at.partial_cmp(&self.at)
+        Some(self.cmp(other))
     }
 }
 
 impl Ord for TimerWithWaker {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        // intentionally reversed
         other.at.cmp(&self.at)
     }
 }
