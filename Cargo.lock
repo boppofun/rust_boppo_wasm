@@ -38,7 +38,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "boppo_wasm_activity"
+name = "boppo_wasm"
 version = "0.1.0"
 dependencies = [
  "boppo_core",
