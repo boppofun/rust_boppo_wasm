@@ -57,7 +57,7 @@ static WOKEN: AtomicBool = AtomicBool::new(false);
 /// This is what will let the executor signal that there is a task ready.
 /// In this case, running the polling a second time will wake those tasks.
 fn signal_waker() -> Waker {
-    const VTABLE: RawWakerVTable = RawWakerVTable::new(
+    static VTABLE: RawWakerVTable = RawWakerVTable::new(
         |_| RawWaker::new(std::ptr::null(), &VTABLE),
         |_| {
             WOKEN.store(true, Ordering::Relaxed);
@@ -96,13 +96,13 @@ pub fn internal_block_on<T>(fut: impl Future<Output = T>) -> T {
         // starvation.
         // Otherwise block until the next event or timer (-1 if no timer is pending).
         let timeout = if WOKEN.load(Ordering::Relaxed) {
-            0
+            continue;
         } else {
             next_timeout()
         };
-        let raw: Result<HostEvent, String> = unsafe { boppo_wasm_poll(timeout) }.try_into();
+        let raw: Result<HostEvent, u8> = unsafe { boppo_wasm_poll(timeout) }.try_into();
         match raw {
-            Err(e) => log::debug!("Received unrecognized event from host : {e}"),
+            Err(e) => log::debug!("skipping unknown host event: {e}"),
             Ok(HostEvent::Button(e)) => broadcast_event(e),
             Ok(HostEvent::Timeout) => wake_and_clean_expired_timers(),
             Ok(HostEvent::Audio(event)) => {

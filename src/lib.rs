@@ -18,6 +18,8 @@ pub use executor::spawn;
 pub use host_ffi::audio::{AudioEvent, AudioParameter};
 pub use host_ffi::host_event::HostEvent;
 
+pub use boppo_core;
+
 #[cfg(feature = "wasm_client")]
 pub use host_ffi::audio::{AudioHandle, DetachedAudioHandle};
 

@@ -28,17 +28,18 @@ impl Eq for TimerWithWaker {}
 
 impl PartialOrd for TimerWithWaker {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        other.at.partial_cmp(&self.at)
+        Some(self.cmp(other))
     }
 }
 
 impl Ord for TimerWithWaker {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        // intentionally reversed
         other.at.cmp(&self.at)
     }
 }
 
-///Timer driver implementation for embassy-time
+/// Timer driver implementation for embassy-time
 struct BoppoWasmDriver;
 
 impl Driver for BoppoWasmDriver {
@@ -86,7 +87,7 @@ pub fn next_timeout() -> i32 {
         };
         let now = BoppoWasmDriver.now();
         if timer_with_waker.at <= now {
-            return 1;
+            return 0;
         }
 
         (((timer_with_waker.at - now) / 1000).min(i32::MAX as u64) as i32).max(1)

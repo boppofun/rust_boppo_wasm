@@ -69,7 +69,7 @@ impl HostEvent {
 }
 
 impl TryFrom<i64> for HostEvent {
-    type Error = String;
+    type Error = u8;
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
         let buffer = value.to_le_bytes();
@@ -89,11 +89,11 @@ impl TryFrom<i64> for HostEvent {
                 match audio_sub_type {
                     0 => Ok(Self::Audio(AudioEvent::Finished(handle))),
                     1 => Ok(Self::Audio(AudioEvent::BadHandleError(handle))),
-                    n => Err(format!("Unknown audio event sub-type {n}")),
+                    _ => Err(2),
                 }
             }
             3 => Ok(Self::Timeout),
-            n => Err(format!("Unknown event type {n}")),
+            n => Err(n),
         }
     }
 }

@@ -1,34 +1,12 @@
-# Boppo Webassembly Activity Framework for Rust
+# Boppo WebAssembly Activity Framework for Rust
 
-This repository contains the Rust framework for creating local Webassembly activities using Rust.
+> [!IMPORTANT]
+> IN DEVELOPMENT: This is not ready for public consumption and has not been released on the Boppo tablet yet but is expected to be included in the next tablet release.
 
-In development
+[Boppo](https://boppo.com) is a screen-free tablet with 10 light-up buttons and a speaker. Boppo allows for new activities to be run on the tablet using WebAssembly.
 
-## Initial architecture diagram
+This is the Rust library for writing activities on Boppo via WebAssembly.
 
-![Architectural diagram](./static/WASM_architecture.svg)
+To use this library it is recommended you clone our template Rust activity (TODO link here).
 
-### High-level main activity execution sequence
-
-![Architectural diagram](./static/threadmodel-main.svg)
-
-### Light setting sequence
-
-![Architectural diagram](./static/threadmodel-lights.svg)
-
-### Button events sequence
-
-![Architectural diagram](./static/threadmodel-buttons.svg)
-
-## Key design questions remaining
-
-1. AOT compilation of wasm modules would probably be beneficial for activities (read from flash, not copied to RAM); but this requires a compatible Wamr version to compile the wasm file -- an extra step. Wouldn't it be interesting, for "third party activity developers" developer experience, to provide the build step as a web service on the boppo activity developer portal (or whatever it ends up being named ;) ) ? This way they can compile to wasm and we do the final AOT step. We can keep interpreter mode for development or fallback, but AOT seems interesting on embedded devices -- limited resources and all.
-
-
-## Findings for later
-
-### Integration of Wamr
-
-WAMR has an [officially supported component](https://components.espressif.com/components/espressif/wasm-micro-runtime/versions/2.4.0~1/readme) for esp.
-
-The wamr-rust-sdk can use it directly by using the "esp-idf" feature flag, and fall back to building it from source on desktop.
+Much of the API (e.g. handling button events, setting button colors) is located in the boppo_core crate and exposed here.
