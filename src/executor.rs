@@ -13,7 +13,7 @@ use edge_executor::{LocalExecutor, Task};
 
 use crate::{
     HostEvent,
-    host_ffi::{audio::AUDIO_SENDER, buttons::broadcast_event, host_event::boppo_wasm_poll},
+    host_ffi::{audio::AUDIO_SENDER, buttons::broadcast_event, host_event::boppo_poll},
 };
 
 use crate::timer::{next_timeout, wake_and_clean_expired_timers};
@@ -100,7 +100,7 @@ pub fn internal_block_on<T>(fut: impl Future<Output = T>) -> T {
         } else {
             next_timeout()
         };
-        let raw: Result<HostEvent, u8> = unsafe { boppo_wasm_poll(timeout) }.try_into();
+        let raw: Result<HostEvent, u8> = unsafe { boppo_poll(timeout) }.try_into();
         match raw {
             Err(e) => log::debug!("skipping unknown host event: {e}"),
             Ok(HostEvent::Button(e)) => broadcast_event(e),

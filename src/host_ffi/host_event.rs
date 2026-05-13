@@ -10,7 +10,7 @@ unsafe extern "C" {
     /// This can be used to poll for button events or wait a certain time if not event was received
     /// in between.
     /// Returns a HostEvent i64 representation.
-    pub fn boppo_wasm_poll(timeout_ms: i32) -> i64;
+    pub fn boppo_poll(timeout_ms: i32) -> i64;
 }
 
 #[non_exhaustive]
