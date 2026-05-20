@@ -33,12 +33,12 @@ unsafe extern "C" {
     fn boppo_open_audio_file(path_ptr: *const u8, str_length: usize) -> i32;
 
     /// Plays an open sound based on its ID.
-    fn boppo_play_audio(audio_handle: i32);
+    fn boppo_play_audio(audio_handle: i32) -> i32;
 
     /// Sets a parameter to control the sound : volume, pause, etc.
-    fn boppo_set_audio_parameter(sound_id: i32, parameter: i32, value: f32);
+    fn boppo_set_audio_parameter(sound_id: i32, parameter: i32, value: f32) -> i32;
 
-    fn boppo_stop_and_unload_audio(sound_id: i32);
+    fn boppo_stop_and_unload_audio(sound_id: i32) -> i32;
 
 }
 
@@ -100,29 +100,56 @@ impl AudioHandle {
         Ok(())
     }
 
-    pub fn set_paused(&self, paused: bool) {
+    pub fn set_paused(&self, paused: bool) -> Result<(), BadHandleError> {
+        if self.is_finished() {
+            return Err(BadHandleError);
+        }
         unsafe {
-            boppo_set_audio_parameter(
+            if boppo_set_audio_parameter(
                 self.0,
                 AudioParameter::Pause as i32,
                 if paused { 1. } else { 0. },
-            );
+            ) >= 0
+            {
+                Ok(())
+            } else {
+                Err(BadHandleError)
+            }
         }
     }
 
-    pub fn set_volume(&self, volume: f32) {
+    pub fn set_volume(&self, volume: f32) -> Result<(), BadHandleError> {
+        if self.is_finished() {
+            return Err(BadHandleError);
+        }
         unsafe {
-            boppo_set_audio_parameter(self.0, AudioParameter::Volume as i32, volume);
+            if boppo_set_audio_parameter(self.0, AudioParameter::Volume as i32, volume) >= 0 {
+                Ok(())
+            } else {
+                Err(BadHandleError)
+            }
         }
     }
 
-    pub fn set_speed(&self, speed: f32) {
+    pub fn set_speed(&self, speed: f32) -> Result<(), BadHandleError> {
+        if self.is_finished() {
+            return Err(BadHandleError);
+        }
         unsafe {
-            boppo_set_audio_parameter(self.0, AudioParameter::Speed as i32, speed);
+            if boppo_set_audio_parameter(self.0, AudioParameter::Speed as i32, speed) >= 0 {
+                Ok(())
+            } else {
+                Err(BadHandleError)
+            }
         }
     }
 
+    // This does not return an error because stopping an already stopped audio shouldn't
+    // do anything, thus can't fail.
     pub fn stop(self) {
+        if self.is_finished() {
+            return;
+        }
         unsafe {
             boppo_stop_and_unload_audio(self.0);
         }
