@@ -3,7 +3,7 @@ use std::{
     error::Error,
     f32,
     fmt::Display,
-    sync::{Mutex, OnceLock},
+    sync::{OnceLock, RwLock},
 };
 
 use boppo_core::log;
@@ -11,7 +11,7 @@ use tokio::sync::oneshot::{self, Sender};
 
 use crate::host_ffi::audio::AudioParameter;
 
-pub(crate) static OPENED_AUDIO_MAP: OnceLock<Mutex<BTreeMap<i32, Option<Sender<()>>>>> =
+pub(crate) static OPENED_AUDIO_MAP: OnceLock<RwLock<BTreeMap<i32, Option<Sender<()>>>>> =
     OnceLock::new();
 
 #[derive(Debug)]
@@ -48,7 +48,9 @@ pub struct AudioHandle(i32);
 
 #[cfg(feature = "wasm_client")]
 pub fn init() {
-    let _ = OPENED_AUDIO_MAP.set(Mutex::new(BTreeMap::new()));
+    use std::sync::RwLock;
+
+    let _ = OPENED_AUDIO_MAP.set(RwLock::new(BTreeMap::new()));
 }
 
 #[cfg(feature = "wasm_client")]
@@ -58,6 +60,8 @@ impl AudioHandle {
         if handle < 0 {
             Err(())
         } else {
+            let mut map = OPENED_AUDIO_MAP.get().unwrap().write().unwrap();
+            map.insert(handle, None);
             Ok(Self(handle))
         }
     }
@@ -69,12 +73,13 @@ impl AudioHandle {
             }
             Ok(())
         } else {
-            Err(todo!())
+            Err(BadHandleError)
         }
     }
 
     pub fn is_finished(&self) -> bool {
-        todo!()
+        let map = OPENED_AUDIO_MAP.get().unwrap().read().unwrap();
+        map.get(&self.0).is_some()
     }
 
     pub async fn notify(self) {
@@ -82,7 +87,7 @@ impl AudioHandle {
             return;
         }
         let receiver = {
-            let mut map = OPENED_AUDIO_MAP.get().unwrap().lock().unwrap();
+            let mut map = OPENED_AUDIO_MAP.get().unwrap().write().unwrap();
             let (sender, receiver) = oneshot::channel();
             map.insert(self.0, Some(sender));
             receiver
