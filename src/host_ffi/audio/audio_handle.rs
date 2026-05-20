@@ -44,7 +44,7 @@ unsafe extern "C" {
 
 /// Represents a detached playing audio file that might have already been unloaded.
 #[cfg(feature = "wasm_client")]
-pub struct AudioHandle(i32, Option<Receiver<()>>);
+pub struct AudioHandle(i32);
 
 #[cfg(feature = "wasm_client")]
 pub fn init() {
@@ -58,7 +58,7 @@ impl AudioHandle {
         if handle < 0 {
             Err(())
         } else {
-            Ok(Self(handle, None))
+            Ok(Self(handle))
         }
     }
 
@@ -77,25 +77,24 @@ impl AudioHandle {
         todo!()
     }
 
+    pub async fn notify(self) {
+        if self.is_finished() {
+            return;
+        }
+        let mut map = OPENED_AUDIO_MAP.get().unwrap().lock().unwrap();
+        let (sender, receiver) = oneshot::channel();
+        map.insert(self.0, Some(sender));
+        if let Err(e) = receiver.await {
+            log::error!("Error receiving audio end notifier : {e}");
+            // Instead of exposing an internal error to the user, just exist the activity.
+            std::process::exit(1);
+        }
+    }
+
     pub async fn play_and_notify(self) -> Result<(), BadHandleError> {
         self.play()?;
-        let (sender, receiver) = oneshot::channel();
-        OPENED_AUDIO_MAP
-            .get()
-            .unwrap()
-            .lock()
-            .unwrap()
-            .insert(self.0, Some(sender));
-        match receiver.await {
-            Ok(()) => Ok(()),
-            Err(e) => {
-                // If we do our job correctly, this should never happen
-                log::error!("Error receiving audio event : {e}");
-
-                // Instead of exposing an internal error to the user, just exist the activity.
-                std::process::exit(1);
-            }
-        }
+        self.notify().await;
+        Ok(())
     }
 
     pub fn set_paused(&self, paused: bool) {
