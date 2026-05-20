@@ -7,7 +7,7 @@ use std::{
 };
 
 use boppo_core::log;
-use tokio::sync::oneshot::{self, Receiver, Sender};
+use tokio::sync::oneshot::{self, Sender};
 
 use crate::host_ffi::audio::AudioParameter;
 
@@ -81,9 +81,12 @@ impl AudioHandle {
         if self.is_finished() {
             return;
         }
-        let mut map = OPENED_AUDIO_MAP.get().unwrap().lock().unwrap();
-        let (sender, receiver) = oneshot::channel();
-        map.insert(self.0, Some(sender));
+        let receiver = {
+            let mut map = OPENED_AUDIO_MAP.get().unwrap().lock().unwrap();
+            let (sender, receiver) = oneshot::channel();
+            map.insert(self.0, Some(sender));
+            receiver
+        };
         if let Err(e) = receiver.await {
             log::error!("Error receiving audio end notifier : {e}");
             // Instead of exposing an internal error to the user, just exist the activity.
