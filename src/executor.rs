@@ -105,8 +105,8 @@ pub fn internal_block_on<T>(fut: impl Future<Output = T>) -> T {
             Err(e) => log::debug!("skipping unknown host event: {e}"),
             Ok(HostEvent::Button(e)) => broadcast_event(e),
             Ok(HostEvent::Timeout) => wake_and_clean_expired_timers(),
-            Ok(HostEvent::Audio(event)) => {
-                AUDIO_SENDER.get().unwrap().send(event).unwrap();
+            Ok(HostEvent::FinishedAudio(handle)) => {
+                AUDIO_SENDER.get().unwrap().send(handle).unwrap();
             }
             Ok(HostEvent::Exit) => {
                 // Host requested exit.

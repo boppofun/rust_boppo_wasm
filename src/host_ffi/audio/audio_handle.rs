@@ -1,12 +1,11 @@
 use std::{error::Error, f32, fmt::Display, sync::OnceLock};
 
-use super::AudioEvent;
 use boppo_core::log;
 use tokio::sync::{broadcast, broadcast::Receiver};
 
 use crate::host_ffi::audio::AudioParameter;
 
-pub(crate) static AUDIO_SENDER: OnceLock<broadcast::Sender<AudioEvent>> = OnceLock::new();
+pub(crate) static AUDIO_SENDER: OnceLock<broadcast::Sender<i32>> = OnceLock::new();
 
 #[derive(Debug)]
 pub struct BadHandleError;
@@ -43,7 +42,7 @@ unsafe extern "C" {
 // completion of this struct effectively drops it, triggering clean-up on the host
 // so that entries don't pile up.
 #[cfg(feature = "wasm_client")]
-pub struct AudioHandle(i32, Receiver<AudioEvent>);
+pub struct AudioHandle(i32, Receiver<i32>);
 
 /// Represents a detached playing audio file that might have already been unloaded.
 #[cfg(feature = "wasm_client")]
@@ -81,14 +80,9 @@ impl AudioHandle {
         loop {
             let event = self.1.recv().await;
             match event {
-                Ok(AudioEvent::Finished(handle)) => {
+                Ok(handle) => {
                     if handle == self.0 {
                         break Ok(());
-                    }
-                }
-                Ok(AudioEvent::BadHandleError(handle)) => {
-                    if handle == self.0 {
-                        break Err(BadHandleError);
                     }
                 }
                 Err(e) => {
@@ -149,7 +143,7 @@ impl DetachedAudioHandle {
     pub async fn notify(mut self) {
         // Taking the internal handle ensures it is dropped at the end of this function
         if let Some(mut handle) = self.0.take() {
-            // Wether the future resolves with a Finished or BadHandleError, it means playback is over.
+            // When the future resolves, it means playback is over.
             let _ = handle.internal_play_and_notify().await;
         }
         //Handle already consumed. Do nothing.

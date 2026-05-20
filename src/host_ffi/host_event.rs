@@ -1,7 +1,5 @@
 use boppo_core::ButtonEvent;
 
-use crate::host_ffi::audio::AudioEvent;
-
 #[cfg(feature = "wasm_client")]
 #[link(wasm_import_module = "host")]
 unsafe extern "C" {
@@ -17,17 +15,16 @@ unsafe extern "C" {
 pub enum HostEvent {
     Exit,
     Button(ButtonEvent),
-    Audio(AudioEvent),
+    FinishedAudio(i32),
     Timeout,
 }
 
 // i64 event encoding layout :
-//   byte 0:   HostEvent type (0=Exit, 1=Button, 2=Audio, 3=Timeout)
+//   byte 0:   HostEvent type (0=Exit, 1=Button, 2=FinishedAudio, 3=Timeout)
 //   bytes 1-7: payload
 //
-// Audio payload:
-//   bytes 1-2: unused as of now
-//   byte  3:   AudioEvent sub-type (0=Finished, 1=BadHandleError)
+// FinishedAudio payload:
+//   bytes 1-3: unused
 //   bytes 4-7: handle as i32
 //
 // ButtonEvent payload:
@@ -41,7 +38,7 @@ impl HostEvent {
         match self {
             Self::Exit => 0,
             Self::Button(_) => 1,
-            Self::Audio(_) => 2,
+            Self::FinishedAudio(_) => 2,
             Self::Timeout => 3,
         }
     }
@@ -52,16 +49,9 @@ impl HostEvent {
         match self {
             Self::Button(b) => result[5..7].copy_from_slice(&b.as_u16().to_le_bytes()),
             Self::Exit => {}
-            Self::Audio(audio_event) => match audio_event {
-                AudioEvent::Finished(handle) => {
-                    result[2] = 0;
-                    result[3..7].copy_from_slice(&handle.to_le_bytes());
-                }
-                AudioEvent::BadHandleError(handle) => {
-                    result[2] = 1;
-                    result[3..7].copy_from_slice(&handle.to_le_bytes());
-                }
-            },
+            Self::FinishedAudio(handle) => {
+                result[3..7].copy_from_slice(&handle.to_le_bytes());
+            }
             Self::Timeout => {}
         }
         result
@@ -84,13 +74,8 @@ impl TryFrom<i64> for HostEvent {
                 ))))
             }
             2 => {
-                let audio_sub_type = buffer[3];
                 let handle = i32::from_le_bytes(buffer[4..8].try_into().unwrap());
-                match audio_sub_type {
-                    0 => Ok(Self::Audio(AudioEvent::Finished(handle))),
-                    1 => Ok(Self::Audio(AudioEvent::BadHandleError(handle))),
-                    _ => Err(2),
-                }
+                Ok(Self::FinishedAudio(handle))
             }
             3 => Ok(Self::Timeout),
             n => Err(n),

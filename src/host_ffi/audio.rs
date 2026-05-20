@@ -1,9 +1,5 @@
-mod audio_event;
-
 #[cfg(feature = "wasm_client")]
 mod audio_handle;
-
-pub use audio_event::AudioEvent;
 
 #[cfg(feature = "wasm_client")]
 pub use audio_handle::{AudioHandle, DetachedAudioHandle, init};
