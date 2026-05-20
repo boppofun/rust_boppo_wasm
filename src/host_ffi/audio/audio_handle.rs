@@ -32,9 +32,8 @@ unsafe extern "C" {
     /// Sets a parameter to control the sound : volume, pause, etc.
     fn boppo_set_audio_parameter(sound_id: i32, parameter: i32, value: f32);
 
-    fn boppo_stop_audio(sound_id: i32);
+    fn boppo_stop_and_unload_audio(sound_id: i32);
 
-    fn boppo_unload_audio(sound_id: i32);
 }
 
 /// Represents an audio file
@@ -131,7 +130,7 @@ impl AudioHandle {
 
     pub fn stop(self) {
         unsafe {
-            boppo_stop_audio(self.0);
+            boppo_stop_and_unload_audio(self.0);
         }
     }
 }
@@ -140,7 +139,7 @@ impl AudioHandle {
 impl Drop for AudioHandle {
     fn drop(&mut self) {
         unsafe {
-            boppo_unload_audio(self.0);
+            boppo_stop_and_unload_audio(self.0);
         }
     }
 }
