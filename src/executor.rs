@@ -13,7 +13,7 @@ use edge_executor::{LocalExecutor, Task};
 
 use crate::{
     HostEvent,
-    host_ffi::{audio::AUDIO_SENDER, buttons::broadcast_event, host_event::boppo_poll},
+    host_ffi::{audio::OPENED_AUDIO_MAP, buttons::broadcast_event, host_event::boppo_poll},
 };
 
 use crate::timer::{next_timeout, wake_and_clean_expired_timers};
@@ -106,7 +106,13 @@ pub fn internal_block_on<T>(fut: impl Future<Output = T>) -> T {
             Ok(HostEvent::Button(e)) => broadcast_event(e),
             Ok(HostEvent::Timeout) => wake_and_clean_expired_timers(),
             Ok(HostEvent::FinishedAudio(handle)) => {
-                AUDIO_SENDER.get().unwrap().send(handle).unwrap();
+                let mut map = OPENED_AUDIO_MAP.get().unwrap().lock().unwrap();
+                if let Some(optionnal_sender) = map.get_mut(&handle) {
+                    if let Some(sender) = optionnal_sender.take() {
+                        let _ = sender.send(());
+                    }
+                }
+                map.remove(&handle);
             }
             Ok(HostEvent::Exit) => {
                 // Host requested exit.
