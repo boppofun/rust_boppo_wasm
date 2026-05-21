@@ -25,3 +25,14 @@ pub fn init() {
     logger::init();
     host_ffi::init();
 }
+
+#[macro_export]
+macro_rules! boppo_async_main {
+    ($name : ident) => {
+        fn main() {
+            use boppo_wasm_activity::{init, internal_block_on};
+            init();
+            internal_block_on($name());
+        }
+    };
+}
