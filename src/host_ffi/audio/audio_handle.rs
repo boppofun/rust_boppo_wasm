@@ -1,29 +1,18 @@
 use std::{
     collections::BTreeMap,
-    error::Error,
     f32,
-    fmt::Display,
     sync::{OnceLock, RwLock},
 };
 
 use boppo_core::log;
 use tokio::sync::oneshot::{self, Sender};
 
+#[cfg(feature = "wasm_client")]
+use crate::AudioError;
 use crate::host_ffi::audio::AudioParameter;
 
 pub(crate) static OPENED_AUDIO_MAP: OnceLock<RwLock<BTreeMap<i32, Option<Sender<()>>>>> =
     OnceLock::new();
-
-#[derive(Debug)]
-pub struct BadHandleError;
-
-impl Display for BadHandleError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str("Incorrect Audio Handle.")
-    }
-}
-
-impl Error for BadHandleError {}
 
 #[cfg(feature = "wasm_client")]
 #[link(wasm_import_module = "host")]
@@ -55,10 +44,10 @@ pub fn init() {
 
 #[cfg(feature = "wasm_client")]
 impl AudioHandle {
-    pub fn open(path: &str) -> Result<Self, ()> {
+    pub fn open(path: &str) -> Result<Self, AudioError> {
         let handle = unsafe { boppo_open_audio_file(path.as_ptr(), path.len()) };
         if handle < 0 {
-            Err(())
+            Err((-handle).into())
         } else {
             let mut map = OPENED_AUDIO_MAP.get().unwrap().write().unwrap();
             map.insert(handle, None);
@@ -66,20 +55,22 @@ impl AudioHandle {
         }
     }
 
-    pub fn play(&self) -> Result<(), BadHandleError> {
+    pub fn play(&self) -> Result<(), AudioError> {
         if !self.is_finished() {
             unsafe {
-                boppo_play_audio(self.0);
+                match boppo_play_audio(self.0) {
+                    0 => Ok(()),
+                    _ => Err(AudioError::InvalidHandle),
+                }
             }
-            Ok(())
         } else {
-            Err(BadHandleError)
+            Err(AudioError::InvalidHandle)
         }
     }
 
     pub fn is_finished(&self) -> bool {
         let map = OPENED_AUDIO_MAP.get().unwrap().read().unwrap();
-        map.get(&self.0).is_some()
+        map.get(&self.0).is_none()
     }
 
     pub async fn notify(self) {
@@ -99,15 +90,15 @@ impl AudioHandle {
         }
     }
 
-    pub async fn play_and_notify(self) -> Result<(), BadHandleError> {
+    pub async fn play_and_notify(self) -> Result<(), AudioError> {
         self.play()?;
         self.notify().await;
         Ok(())
     }
 
-    pub fn set_paused(&self, paused: bool) -> Result<(), BadHandleError> {
+    pub fn set_paused(&self, paused: bool) -> Result<(), AudioError> {
         if self.is_finished() {
-            return Err(BadHandleError);
+            return Err(AudioError::InvalidHandle);
         }
         unsafe {
             if boppo_set_audio_parameter(
@@ -118,33 +109,33 @@ impl AudioHandle {
             {
                 Ok(())
             } else {
-                Err(BadHandleError)
+                Err(AudioError::InvalidHandle)
             }
         }
     }
 
-    pub fn set_volume(&self, volume: f32) -> Result<(), BadHandleError> {
+    pub fn set_volume(&self, volume: f32) -> Result<(), AudioError> {
         if self.is_finished() {
-            return Err(BadHandleError);
+            return Err(AudioError::InvalidHandle);
         }
         unsafe {
             if boppo_set_audio_parameter(self.0, AudioParameter::Volume as i32, volume) >= 0 {
                 Ok(())
             } else {
-                Err(BadHandleError)
+                Err(AudioError::InvalidHandle)
             }
         }
     }
 
-    pub fn set_speed(&self, speed: f32) -> Result<(), BadHandleError> {
+    pub fn set_speed(&self, speed: f32) -> Result<(), AudioError> {
         if self.is_finished() {
-            return Err(BadHandleError);
+            return Err(AudioError::InvalidHandle);
         }
         unsafe {
             if boppo_set_audio_parameter(self.0, AudioParameter::Speed as i32, speed) >= 0 {
                 Ok(())
             } else {
-                Err(BadHandleError)
+                Err(AudioError::InvalidHandle)
             }
         }
     }
