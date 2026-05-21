@@ -160,12 +160,3 @@ impl AudioHandle {
         }
     }
 }
-
-#[cfg(feature = "wasm_client")]
-impl Drop for AudioHandle {
-    fn drop(&mut self) {
-        unsafe {
-            boppo_stop_and_unload_audio(self.0);
-        }
-    }
-}
