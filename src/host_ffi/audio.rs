@@ -23,6 +23,7 @@ pub enum AudioError {
     NotFound = 2,
     PermissionDenied = 3,
     InvalidPath = 4,
+    InvalidParameter = 5,
     Unknown = 255,
 }
 
@@ -33,6 +34,7 @@ impl Display for AudioError {
             AudioError::InvalidPath => f.write_str("Invalid file path"),
             AudioError::PermissionDenied => f.write_str("Permission denied"),
             AudioError::NotFound => f.write_str("File not found"),
+            AudioError::InvalidParameter => f.write_str("Invalid audio parameter"),
             AudioError::Unknown => f.write_str("Unknown audio error"),
         }
     }
@@ -60,6 +62,7 @@ impl From<i32> for AudioError {
             2 => AudioError::NotFound,
             3 => AudioError::PermissionDenied,
             4 => AudioError::InvalidPath,
+            5 => AudioError::InvalidParameter,
             _ => AudioError::Unknown,
         }
     }
