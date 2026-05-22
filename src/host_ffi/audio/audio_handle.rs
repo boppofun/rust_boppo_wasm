@@ -17,16 +17,34 @@ pub(crate) static OPENED_AUDIO_MAP: OnceLock<RwLock<BTreeMap<i32, Option<Sender<
 #[cfg(feature = "wasm_client")]
 #[link(wasm_import_module = "host")]
 unsafe extern "C" {
-    /// Opens a sound file on the host
-    /// Returns an integer ID for the matching sound.
+    /// Opens an audio file for playing.
+    /// Returns a positive integer representing the audio handle, and a negative error code otherwise.
+    ///
+    /// ## Failure
+    ///
+    /// Returns a negative handle in case of failure:
+    /// * -2 if the file was not found
+    /// * -3 if the requested file path is restricted (permission denied)
+    /// * -4 if the path itself is invalid
+    /// * -255 for internal errors
     fn boppo_open_audio_file(path_ptr: *const u8, str_length: usize) -> i32;
 
-    /// Plays an open sound based on its ID.
+    /// Plays an opened audio file using its handle.
+    /// Returns 0 if successful, -1 if handle was invalid.
     fn boppo_play_audio(audio_handle: i32) -> i32;
 
-    /// Sets a parameter to control the sound : volume, pause, etc.
+    ///Sets an audio parameter for an opened audio clip, using its handle,
+    /// a parameter code, and an f32 value:
+    /// * Parameter code 0 : pauses (1.) or unpauses (0.) a clip.
+    /// * Parameter code 1 : Volume, with values ranging from 0. to 1.
+    /// * Parameter code 2 : Speed multiplier with values ranging from 0. to 1.
+    ///
+    /// Returns 0 if successful, -1 if the provided handle was invalid, and -5 if the parameter
+    /// code was unrecognized.
     fn boppo_set_audio_parameter(sound_id: i32, parameter: i32, value: f32) -> i32;
 
+    /// Stops and unloads an opened audio clip based on its handle.
+    /// Returns 0 if successful, -1 if handle was invalid.
     fn boppo_stop_and_unload_audio(sound_id: i32) -> i32;
 
 }
@@ -101,15 +119,15 @@ impl AudioHandle {
             return Err(AudioError::InvalidHandle);
         }
         unsafe {
-            if boppo_set_audio_parameter(
+            let status = boppo_set_audio_parameter(
                 self.0,
                 AudioParameter::Pause as i32,
                 if paused { 1. } else { 0. },
-            ) >= 0
-            {
+            );
+            if status >= 0 {
                 Ok(())
             } else {
-                Err(AudioError::InvalidHandle)
+                Err((-status).into())
             }
         }
     }
@@ -119,10 +137,11 @@ impl AudioHandle {
             return Err(AudioError::InvalidHandle);
         }
         unsafe {
-            if boppo_set_audio_parameter(self.0, AudioParameter::Volume as i32, volume) >= 0 {
+            let status = boppo_set_audio_parameter(self.0, AudioParameter::Volume as i32, volume);
+            if status >= 0 {
                 Ok(())
             } else {
-                Err(AudioError::InvalidHandle)
+                Err((-status).into())
             }
         }
     }
@@ -132,22 +151,26 @@ impl AudioHandle {
             return Err(AudioError::InvalidHandle);
         }
         unsafe {
-            if boppo_set_audio_parameter(self.0, AudioParameter::Speed as i32, speed) >= 0 {
+            let status = boppo_set_audio_parameter(self.0, AudioParameter::Speed as i32, speed);
+            if status >= 0 {
                 Ok(())
             } else {
-                Err(AudioError::InvalidHandle)
+                Err((-status).into())
             }
         }
     }
 
-    // This does not return an error because stopping an already stopped audio shouldn't
-    // do anything, thus can't fail.
-    pub fn stop(self) {
+    pub fn stop(self) -> Result<(), AudioError> {
         if self.is_finished() {
-            return;
+            return Ok(());
         }
         unsafe {
-            boppo_stop_and_unload_audio(self.0);
+            let status = boppo_stop_and_unload_audio(self.0);
+            if status >= 0 {
+                Ok(())
+            } else {
+                Err((-status).into())
+            }
         }
     }
 }
