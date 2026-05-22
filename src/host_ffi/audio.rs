@@ -4,7 +4,7 @@ mod audio_handle;
 use std::{error::Error, fmt::Display};
 
 #[cfg(feature = "wasm_client")]
-pub use audio_handle::{AudioHandle, init};
+pub use audio_handle::{AudioHandle, init, stop_all};
 
 #[cfg(feature = "wasm_client")]
 pub(crate) use audio_handle::OPENED_AUDIO_MAP;

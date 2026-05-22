@@ -47,6 +47,9 @@ unsafe extern "C" {
     /// Returns 0 if successful, -1 if handle was invalid.
     fn boppo_stop_and_unload_audio(sound_id: i32) -> i32;
 
+    /// Stops and unloads all currently loaded audio clips.
+    fn boppo_stop_and_unload_all_audio();
+
 }
 
 /// Represents a detached playing audio file that might have already been unloaded.
@@ -172,5 +175,13 @@ impl AudioHandle {
                 Err((-status).into())
             }
         }
+    }
+}
+
+/// Stops and unloads all currently loaded audio clips, invalidating all
+/// existing audio handles, even unplayed ones.
+pub fn stop_all() {
+    unsafe {
+        boppo_stop_and_unload_all_audio();
     }
 }
