@@ -65,24 +65,19 @@ pub fn init() {
 #[cfg(feature = "wasm_client")]
 impl AudioHandle {
     pub fn open(path: &str) -> Result<Self, AudioError> {
-        let handle = unsafe { boppo_open_audio_file(path.as_ptr(), path.len()) };
-        if handle < 0 {
-            Err((-handle).into())
-        } else {
-            let mut map = OPENED_AUDIO_MAP.get().unwrap().write().unwrap();
-            map.insert(handle, None);
-            Ok(Self(handle))
-        }
+        let handle =
+            unsafe { status_code_to_result(boppo_open_audio_file(path.as_ptr(), path.len()))? };
+        let mut map = OPENED_AUDIO_MAP.get().unwrap().write().unwrap();
+        map.insert(handle, None);
+        Ok(Self(handle))
     }
 
     pub fn play(&self) -> Result<(), AudioError> {
         if !self.is_finished() {
             unsafe {
-                match boppo_play_audio(self.0) {
-                    0 => Ok(()),
-                    _ => Err(AudioError::InvalidHandle),
-                }
+                status_code_to_result(boppo_play_audio(self.0))?;
             }
+            Ok(())
         } else {
             Err(AudioError::InvalidHandle)
         }
@@ -117,50 +112,42 @@ impl AudioHandle {
 
     pub fn set_paused(&self, paused: bool) -> Result<(), AudioError> {
         unsafe {
-            let status = boppo_set_audio_parameter(
+            status_code_to_result(boppo_set_audio_parameter(
                 self.0,
                 AudioParameter::Pause as i32,
                 if paused { 1. } else { 0. },
-            );
-            if status >= 0 {
-                Ok(())
-            } else {
-                Err((-status).into())
-            }
+            ))?;
         }
+        Ok(())
     }
 
     pub fn set_volume(&self, volume: f32) -> Result<(), AudioError> {
         unsafe {
-            let status = boppo_set_audio_parameter(self.0, AudioParameter::Volume as i32, volume);
-            if status >= 0 {
-                Ok(())
-            } else {
-                Err((-status).into())
-            }
+            status_code_to_result(boppo_set_audio_parameter(
+                self.0,
+                AudioParameter::Volume as i32,
+                volume,
+            ))?;
         }
+        Ok(())
     }
 
     pub fn set_speed(&self, speed: f32) -> Result<(), AudioError> {
         unsafe {
-            let status = boppo_set_audio_parameter(self.0, AudioParameter::Speed as i32, speed);
-            if status >= 0 {
-                Ok(())
-            } else {
-                Err((-status).into())
-            }
+            status_code_to_result(boppo_set_audio_parameter(
+                self.0,
+                AudioParameter::Speed as i32,
+                speed,
+            ))?;
         }
+        Ok(())
     }
 
     pub fn stop(self) -> Result<(), AudioError> {
         unsafe {
-            let status = boppo_stop_audio(self.0);
-            if status >= 0 {
-                Ok(())
-            } else {
-                Err((-status).into())
-            }
+            status_code_to_result(boppo_stop_audio(self.0))?;
         }
+        Ok(())
     }
 }
 
@@ -169,5 +156,13 @@ impl AudioHandle {
 pub fn stop_all() {
     unsafe {
         boppo_stop_all_audio();
+    }
+}
+
+fn status_code_to_result(n: i32) -> Result<i32, AudioError> {
+    if n < 0 {
+        Err(AudioError::from(-n))
+    } else {
+        Ok(n)
     }
 }
