@@ -105,9 +105,8 @@ impl AudioHandle {
             receiver
         };
         if let Err(e) = receiver.await {
-            log::error!("Error receiving audio end notifier : {e}");
-            // Instead of exposing an internal error to the user, just exist the activity.
-            std::process::exit(1);
+            // Instead of exposing an internal error to the user, just panic & exit the activity.
+            panic!("Error receiving audio end notifier : {e}");
         }
     }
 
