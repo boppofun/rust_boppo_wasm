@@ -93,7 +93,7 @@ impl AudioHandle {
         map.get(&self.0).is_none()
     }
 
-    pub async fn notify(self) {
+    pub async fn wait_until_finished(self) {
         if self.is_finished() {
             return;
         }
@@ -109,9 +109,9 @@ impl AudioHandle {
         }
     }
 
-    pub async fn play_and_notify(self) -> Result<(), AudioError> {
+    pub async fn play_and_wait_until_finished(self) -> Result<(), AudioError> {
         self.play()?;
-        self.notify().await;
+        self.wait_until_finished().await;
         Ok(())
     }
 
