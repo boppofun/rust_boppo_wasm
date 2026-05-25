@@ -4,7 +4,6 @@ use std::{
     sync::{OnceLock, RwLock},
 };
 
-use boppo_core::log;
 use tokio::sync::oneshot::{self, Sender};
 
 #[cfg(feature = "wasm_client")]
@@ -45,10 +44,10 @@ unsafe extern "C" {
 
     /// Stops and unloads an opened audio clip based on its handle.
     /// Returns 0 if successful, -1 if handle was invalid.
-    fn boppo_stop_and_unload_audio(sound_id: i32) -> i32;
+    fn boppo_stop_audio(sound_id: i32) -> i32;
 
     /// Stops and unloads all currently loaded audio clips.
-    fn boppo_stop_and_unload_all_audio();
+    fn boppo_stop_all_audio();
 
 }
 
@@ -155,7 +154,7 @@ impl AudioHandle {
 
     pub fn stop(self) -> Result<(), AudioError> {
         unsafe {
-            let status = boppo_stop_and_unload_audio(self.0);
+            let status = boppo_stop_audio(self.0);
             if status >= 0 {
                 Ok(())
             } else {
@@ -169,6 +168,6 @@ impl AudioHandle {
 /// existing audio handles, even unplayed ones.
 pub fn stop_all() {
     unsafe {
-        boppo_stop_and_unload_all_audio();
+        boppo_stop_all_audio();
     }
 }
