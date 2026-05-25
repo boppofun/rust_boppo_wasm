@@ -17,7 +17,7 @@ pub enum AudioParameter {
 }
 
 #[repr(i32)]
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum AudioError {
     InvalidHandle = 1,
     NotFound = 2,
@@ -65,5 +65,11 @@ impl From<i32> for AudioError {
             5 => AudioError::InvalidParameter,
             _ => AudioError::Unknown,
         }
+    }
+}
+
+impl AudioError {
+    pub fn as_neg_i32(&self) -> i32 {
+        -(*self as i32)
     }
 }
