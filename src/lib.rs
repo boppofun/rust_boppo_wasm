@@ -3,6 +3,8 @@ pub mod executor;
 
 mod host_ffi;
 
+mod error;
+
 #[cfg(feature = "wasm_client")]
 pub mod logger;
 
@@ -15,7 +17,8 @@ pub use executor::internal_block_on;
 #[cfg(feature = "wasm_client")]
 pub use executor::spawn;
 
-pub use host_ffi::audio::{self, AudioError, AudioParameter};
+pub use error::BoppoError;
+pub use host_ffi::audio::{self, AudioParameter};
 pub use host_ffi::host_event::HostEvent;
 
 pub use boppo_core;
