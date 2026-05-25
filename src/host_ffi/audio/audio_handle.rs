@@ -117,9 +117,6 @@ impl AudioHandle {
     }
 
     pub fn set_paused(&self, paused: bool) -> Result<(), AudioError> {
-        if self.is_finished() {
-            return Err(AudioError::InvalidHandle);
-        }
         unsafe {
             let status = boppo_set_audio_parameter(
                 self.0,
@@ -135,9 +132,6 @@ impl AudioHandle {
     }
 
     pub fn set_volume(&self, volume: f32) -> Result<(), AudioError> {
-        if self.is_finished() {
-            return Err(AudioError::InvalidHandle);
-        }
         unsafe {
             let status = boppo_set_audio_parameter(self.0, AudioParameter::Volume as i32, volume);
             if status >= 0 {
@@ -149,9 +143,6 @@ impl AudioHandle {
     }
 
     pub fn set_speed(&self, speed: f32) -> Result<(), AudioError> {
-        if self.is_finished() {
-            return Err(AudioError::InvalidHandle);
-        }
         unsafe {
             let status = boppo_set_audio_parameter(self.0, AudioParameter::Speed as i32, speed);
             if status >= 0 {
@@ -163,9 +154,6 @@ impl AudioHandle {
     }
 
     pub fn stop(self) -> Result<(), AudioError> {
-        if self.is_finished() {
-            return Ok(());
-        }
         unsafe {
             let status = boppo_stop_and_unload_audio(self.0);
             if status >= 0 {
