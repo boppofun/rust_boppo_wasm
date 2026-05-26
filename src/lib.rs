@@ -17,7 +17,7 @@ pub use executor::internal_block_on;
 #[cfg(feature = "wasm_client")]
 pub use executor::spawn;
 
-pub use error::BoppoError;
+pub use error::Error;
 pub use host_ffi::audio::{self, AudioParameter};
 pub use host_ffi::host_event::HostEvent;
 

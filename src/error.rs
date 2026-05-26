@@ -1,8 +1,8 @@
-use std::{error::Error, fmt::Display};
+use std::{error::Error as StdError, fmt::Display};
 
 #[repr(i32)]
 #[derive(Debug, Clone, Copy)]
-pub enum BoppoError {
+pub enum Error {
     NotFound = 1,
     PermissionDenied = 2,
     InvalidPath = 3,
@@ -10,33 +10,33 @@ pub enum BoppoError {
     Unknown = 255,
 }
 
-impl Display for BoppoError {
+impl Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            BoppoError::InvalidPath => f.write_str("Invalid file path"),
-            BoppoError::PermissionDenied => f.write_str("Permission denied"),
-            BoppoError::NotFound => f.write_str("Resource not found"),
-            BoppoError::InvalidParameter => f.write_str("Invalid audio parameter"),
-            BoppoError::Unknown => f.write_str("Unknown Boppo error"),
+            Error::InvalidPath => f.write_str("Invalid file path"),
+            Error::PermissionDenied => f.write_str("Permission denied"),
+            Error::NotFound => f.write_str("Resource not found"),
+            Error::InvalidParameter => f.write_str("Invalid audio parameter"),
+            Error::Unknown => f.write_str("Unknown Boppo error"),
         }
     }
 }
 
-impl Error for BoppoError {}
+impl StdError for Error {}
 
-impl From<i32> for BoppoError {
+impl From<i32> for Error {
     fn from(value: i32) -> Self {
         match value {
-            1 => BoppoError::NotFound,
-            2 => BoppoError::PermissionDenied,
-            3 => BoppoError::InvalidPath,
-            4 => BoppoError::InvalidParameter,
-            _ => BoppoError::Unknown,
+            1 => Error::NotFound,
+            2 => Error::PermissionDenied,
+            3 => Error::InvalidPath,
+            4 => Error::InvalidParameter,
+            _ => Error::Unknown,
         }
     }
 }
 
-impl BoppoError {
+impl Error {
     pub fn as_neg_i32(&self) -> i32 {
         -(*self as i32)
     }

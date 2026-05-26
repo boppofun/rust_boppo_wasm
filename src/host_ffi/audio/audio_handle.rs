@@ -7,7 +7,7 @@ use std::{
 use tokio::sync::oneshot::{self, Sender};
 
 #[cfg(feature = "wasm_client")]
-use crate::BoppoError;
+use crate::Error;
 use crate::host_ffi::audio::AudioParameter;
 
 pub(crate) static OPENED_AUDIO_MAP: OnceLock<RwLock<BTreeMap<i32, Option<Sender<()>>>>> =
@@ -64,7 +64,7 @@ pub fn init() {
 
 #[cfg(feature = "wasm_client")]
 impl AudioHandle {
-    pub fn open(path: &str) -> Result<Self, BoppoError> {
+    pub fn open(path: &str) -> Result<Self, Error> {
         let handle =
             unsafe { status_code_to_result(boppo_open_audio_file(path.as_ptr(), path.len()))? };
         let mut map = OPENED_AUDIO_MAP.get().unwrap().write().unwrap();
@@ -72,14 +72,14 @@ impl AudioHandle {
         Ok(Self(handle))
     }
 
-    pub fn play(&self) -> Result<(), BoppoError> {
+    pub fn play(&self) -> Result<(), Error> {
         if !self.is_finished() {
             unsafe {
                 status_code_to_result(boppo_play_audio(self.0))?;
             }
             Ok(())
         } else {
-            Err(BoppoError::NotFound)
+            Err(Error::NotFound)
         }
     }
 
@@ -104,13 +104,13 @@ impl AudioHandle {
         }
     }
 
-    pub async fn play_and_wait_until_finished(self) -> Result<(), BoppoError> {
+    pub async fn play_and_wait_until_finished(self) -> Result<(), Error> {
         self.play()?;
         self.wait_until_finished().await;
         Ok(())
     }
 
-    pub fn set_paused(&self, paused: bool) -> Result<(), BoppoError> {
+    pub fn set_paused(&self, paused: bool) -> Result<(), Error> {
         unsafe {
             status_code_to_result(boppo_set_audio_parameter(
                 self.0,
@@ -121,7 +121,7 @@ impl AudioHandle {
         Ok(())
     }
 
-    pub fn set_volume(&self, volume: f32) -> Result<(), BoppoError> {
+    pub fn set_volume(&self, volume: f32) -> Result<(), Error> {
         unsafe {
             status_code_to_result(boppo_set_audio_parameter(
                 self.0,
@@ -132,7 +132,7 @@ impl AudioHandle {
         Ok(())
     }
 
-    pub fn set_speed(&self, speed: f32) -> Result<(), BoppoError> {
+    pub fn set_speed(&self, speed: f32) -> Result<(), Error> {
         unsafe {
             status_code_to_result(boppo_set_audio_parameter(
                 self.0,
@@ -143,7 +143,7 @@ impl AudioHandle {
         Ok(())
     }
 
-    pub fn stop(self) -> Result<(), BoppoError> {
+    pub fn stop(self) -> Result<(), Error> {
         unsafe {
             status_code_to_result(boppo_stop_audio(self.0))?;
         }
@@ -159,10 +159,6 @@ pub fn stop_all() {
     }
 }
 
-fn status_code_to_result(n: i32) -> Result<i32, BoppoError> {
-    if n < 0 {
-        Err(BoppoError::from(-n))
-    } else {
-        Ok(n)
-    }
+fn status_code_to_result(n: i32) -> Result<i32, Error> {
+    if n < 0 { Err(Error::from(-n)) } else { Ok(n) }
 }
