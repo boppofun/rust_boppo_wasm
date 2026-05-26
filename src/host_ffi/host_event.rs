@@ -3,28 +3,42 @@ use boppo_core::ButtonEvent;
 #[cfg(feature = "wasm_client")]
 #[link(wasm_import_module = "host")]
 unsafe extern "C" {
-    /// Polling function for Button events with optionnal timeout.
+    /// Polling function for Button events with optional timeout.
     /// If timeout_ms < 0, poll will happen indefinitely.
     /// This can be used to poll for button events or wait a certain time if not event was received
     /// in between.
     /// Returns a HostEvent i64 representation.
-    pub fn boppo_wasm_poll(timeout_ms: i32) -> i64;
+    pub fn boppo_poll(timeout_ms: i32) -> i64;
 }
 
 #[non_exhaustive]
 pub enum HostEvent {
     Exit,
     Button(ButtonEvent),
-    Audio,
+    FinishedAudio(i32),
     Timeout,
 }
+
+// i64 event encoding layout :
+//   byte 0:   HostEvent type (0=Exit, 1=Button, 2=FinishedAudio, 3=Timeout)
+//   bytes 1-7: payload
+//
+// FinishedAudio payload:
+//   bytes 1-3: unused
+//   bytes 4-7: handle as i32
+//
+// ButtonEvent payload:
+//   bytes 1-4: unused as of now
+//   bytes 5-7: event u16 representation
+//
+// No payload for other event types
 
 impl HostEvent {
     fn event_type_u8(&self) -> u8 {
         match self {
             Self::Exit => 0,
             Self::Button(_) => 1,
-            Self::Audio => 2,
+            Self::FinishedAudio(_) => 2,
             Self::Timeout => 3,
         }
     }
@@ -35,7 +49,9 @@ impl HostEvent {
         match self {
             Self::Button(b) => result[5..7].copy_from_slice(&b.as_u16().to_le_bytes()),
             Self::Exit => {}
-            Self::Audio => todo!(),
+            Self::FinishedAudio(handle) => {
+                result[3..7].copy_from_slice(&handle.to_le_bytes());
+            }
             Self::Timeout => {}
         }
         result
@@ -57,7 +73,10 @@ impl TryFrom<i64> for HostEvent {
                     u16_buffer,
                 ))))
             }
-            2 => todo!(),
+            2 => {
+                let handle = i32::from_le_bytes(buffer[4..8].try_into().unwrap());
+                Ok(Self::FinishedAudio(handle))
+            }
             3 => Ok(Self::Timeout),
             n => Err(n),
         }

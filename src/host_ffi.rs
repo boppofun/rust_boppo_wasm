@@ -1,3 +1,5 @@
+pub mod audio;
+
 #[cfg(feature = "wasm_client")]
 pub mod buttons;
 
@@ -9,4 +11,5 @@ pub mod lights;
 pub fn init() {
     lights::init_lights();
     buttons::init();
+    audio::init();
 }
