@@ -23,7 +23,7 @@ checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 [[package]]
 name = "boppo_core"
 version = "0.1.0"
-source = "git+https://github.com/boppofun/rust_boppo_core?rev=2e7ad789#2e7ad789ba73140d014297bc6a6618226f6ba65c"
+source = "git+https://github.com/boppofun/rust_boppo_core?rev=ac749cde1b5#ac749cde1b5ae031c3f5d4b20316b1a1f7950aa7"
 dependencies = [
  "anyhow",
  "edge-executor",
