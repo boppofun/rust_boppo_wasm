@@ -110,10 +110,10 @@ pub fn internal_block_on<T>(fut: impl Future<Output = T>) -> T {
                     let mut map = OPENED_AUDIO_MAP.get().unwrap().write().unwrap();
                     map.remove(&handle)
                 };
-                if let Some(mut optionnal_sender) = optionnal_sender.take() {
-                    if let Some(sender) = optionnal_sender.take() {
-                        let _ = sender.send(());
-                    }
+                if let Some(mut optional_sender) = optionnal_sender.take()
+                    && let Some(sender) = optional_sender.take()
+                {
+                    let _ = sender.send(());
                 }
             }
             Ok(HostEvent::Exit) => {
