@@ -24,6 +24,7 @@ impl log::Log for WasmLogger {
 static LOGGER: WasmLogger = WasmLogger;
 
 pub fn init() {
-    log::set_logger(&LOGGER).ok();
-    log::set_max_level(log::LevelFilter::Debug);
+    if log::set_logger(&LOGGER).is_ok() {
+        log::set_max_level(log::LevelFilter::Info);
+    }
 }

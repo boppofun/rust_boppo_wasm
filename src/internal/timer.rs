@@ -2,7 +2,6 @@ use std::{cell::RefCell, collections::BinaryHeap, sync::OnceLock, task::Waker, t
 
 use embassy_time_driver::Driver;
 
-#[cfg(feature = "wasm_client")]
 use embassy_time_driver::time_driver_impl;
 
 thread_local! {
@@ -11,7 +10,7 @@ thread_local! {
 
 static START: OnceLock<Instant> = OnceLock::new();
 
-pub struct TimerWithWaker {
+pub(crate) struct TimerWithWaker {
     at: u64,
     waker: Waker,
 }
@@ -57,13 +56,12 @@ impl Driver for BoppoWasmDriver {
     }
 }
 
-#[cfg(feature = "wasm_client")]
 time_driver_impl!(static DRIVER : BoppoWasmDriver = BoppoWasmDriver);
 
 /// Removes and wakes expired timers
 /// This is meant to be called between poll loop iterations so that
 /// it stays relevant (polling updates it)
-pub fn wake_and_clean_expired_timers() {
+pub(crate) fn wake_and_clean_expired_timers() {
     TIMERS.with(|cell| {
         let mut heap = cell.borrow_mut();
         let now = BoppoWasmDriver.now();
@@ -79,7 +77,7 @@ pub fn wake_and_clean_expired_timers() {
 
 /// Returns the timeout for the next boppo_wasm_poll function, which
 /// is the remaining time in milliseconds before the next deadline.
-pub fn next_timeout() -> i32 {
+pub(crate) fn next_timeout() -> i32 {
     TIMERS.with(|cell| {
         let heap = cell.borrow();
         let Some(timer_with_waker) = heap.peek() else {

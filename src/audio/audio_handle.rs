@@ -1,19 +1,9 @@
-use std::{
-    collections::BTreeMap,
-    f32,
-    sync::{OnceLock, RwLock},
-};
+use crate::audio::OPENED_AUDIO_MAP;
+use tokio::sync::oneshot;
 
-use tokio::sync::oneshot::{self, Sender};
-
-#[cfg(feature = "wasm_client")]
 use crate::Error;
-use crate::host_ffi::audio::AudioParameter;
+use crate::internal::audio::AudioParameter;
 
-pub(crate) static OPENED_AUDIO_MAP: OnceLock<RwLock<BTreeMap<i32, Option<Sender<()>>>>> =
-    OnceLock::new();
-
-#[cfg(feature = "wasm_client")]
 #[link(wasm_import_module = "host")]
 unsafe extern "C" {
     /// Opens an audio file for playing.
@@ -45,24 +35,11 @@ unsafe extern "C" {
     /// Stops and unloads an opened audio clip based on its handle.
     /// Returns 0 if successful, -1 if handle was invalid.
     fn boppo_stop_audio(sound_id: i32) -> i32;
-
-    /// Stops and unloads all currently loaded audio clips.
-    fn boppo_stop_all_audio();
-
 }
 
 /// Represents a detached playing audio file that might have already been unloaded.
-#[cfg(feature = "wasm_client")]
 pub struct AudioHandle(i32);
 
-#[cfg(feature = "wasm_client")]
-pub fn init() {
-    use std::sync::RwLock;
-
-    let _ = OPENED_AUDIO_MAP.set(RwLock::new(BTreeMap::new()));
-}
-
-#[cfg(feature = "wasm_client")]
 impl AudioHandle {
     pub fn open(path: &str) -> Result<Self, Error> {
         let handle =
@@ -148,14 +125,6 @@ impl AudioHandle {
             status_code_to_result(boppo_stop_audio(self.0))?;
         }
         Ok(())
-    }
-}
-
-/// Stops and unloads all currently loaded audio clips, invalidating all
-/// existing audio handles, even unplayed ones.
-pub fn stop_all() {
-    unsafe {
-        boppo_stop_all_audio();
     }
 }
 
