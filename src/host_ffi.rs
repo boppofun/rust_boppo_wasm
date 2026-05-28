@@ -12,7 +12,14 @@ pub mod lights;
 unsafe extern "C" {
     /// Notifies that the wasm file is ready to start
     /// Used in test contexts.
+    #[doc(hidden)]
     pub fn boppo_ready();
+}
+
+#[cfg(feature = "wasm_client")]
+#[doc(hidden)]
+pub fn ready() {
+    unsafe { boppo_ready() };
 }
 
 #[cfg(feature = "wasm_client")]
@@ -20,5 +27,4 @@ pub fn init() {
     lights::init_lights();
     buttons::init();
     audio::init();
-    unsafe { boppo_ready() };
 }

@@ -20,6 +20,7 @@ pub use executor::spawn;
 pub use error::Error;
 pub use host_ffi::audio::{self, AudioParameter};
 pub use host_ffi::host_event::HostEvent;
+pub use host_ffi::ready;
 
 pub use boppo_core::*;
 
