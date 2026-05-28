@@ -1,7 +1,3 @@
-//! Since edge executor is scheduled to be removed from boppo_core,
-//! We should provide it with an async executor in WASM.
-//! For now, it mimics what happens in boppo_core.
-
 use std::{
     pin::pin,
     sync::atomic::{AtomicBool, AtomicPtr, Ordering},
@@ -9,14 +5,14 @@ use std::{
 };
 
 use boppo_core::log;
-use edge_executor::{LocalExecutor, Task};
+use edge_executor::LocalExecutor;
 
 use crate::{
-    HostEvent,
-    host_ffi::{audio::OPENED_AUDIO_MAP, buttons::broadcast_event, host_event::boppo_poll},
+    audio::OPENED_AUDIO_MAP,
+    internal::{HostEvent, buttons::broadcast_event},
 };
 
-use crate::timer::{next_timeout, wake_and_clean_expired_timers};
+use crate::internal::timer::{next_timeout, wake_and_clean_expired_timers};
 
 const MAX_TASKS: usize = 32;
 static EXECUTOR: AtomicPtr<LocalExecutor<'static, MAX_TASKS>> =
@@ -27,15 +23,6 @@ pub fn init() {
     let executor = Box::leak(Box::new(LocalExecutor::<MAX_TASKS>::new()));
     EXECUTOR.store(executor as *mut _, std::sync::atomic::Ordering::Relaxed);
     boppo_core::hal::set_executor(executor);
-}
-
-/// Spawns an asynchronous task
-pub fn spawn<F, T>(fut: F) -> Task<T>
-where
-    F: Future<Output = T> + Send + 'static,
-    T: Send + 'static,
-{
-    executor().spawn(fut)
 }
 
 /// Gets the global WASM Executor.
@@ -70,13 +57,22 @@ fn signal_waker() -> Waker {
     unsafe { Waker::from_raw(RawWaker::new(std::ptr::null(), &VTABLE)) }
 }
 
-#[doc(hidden)]
-/// Blocks on a future.
+#[link(wasm_import_module = "host")]
+unsafe extern "C" {
+    /// Polling function for Button events with optional timeout.
+    /// If timeout_ms < 0, poll will happen indefinitely.
+    /// This can be used to poll for button events or wait a certain time if not event was received
+    /// in between.
+    /// Returns a HostEvent i64 representation.
+    pub fn boppo_poll(timeout_ms: i32) -> i64;
+}
+
+/// Block on a future with a custom async executor that integrates with the Boppo WASM host.
+///
 /// Intended to be used to launch an async function from the main (sync) function of the module.
-/// WARNING : this should not be called from inside the async activit without the risk for
-/// logical errors.
-/// It is only meant to be used for async runtime initialization.
-pub fn internal_block_on<T>(fut: impl Future<Output = T>) -> T {
+///
+/// This function should not be called within a future that is already running.
+pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
     let mut top = pin!(executor().run(fut));
     let waker = signal_waker();
     let mut cx = Context::from_waker(&waker);

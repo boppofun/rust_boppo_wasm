@@ -13,11 +13,11 @@ pub enum Error {
 impl Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Error::InvalidPath => f.write_str("Invalid file path"),
-            Error::PermissionDenied => f.write_str("Permission denied"),
-            Error::NotFound => f.write_str("Resource not found"),
-            Error::InvalidParameter => f.write_str("Invalid audio parameter"),
-            Error::Unknown => f.write_str("Unknown Boppo error"),
+            Error::InvalidPath => f.write_str("invalid path"),
+            Error::PermissionDenied => f.write_str("permission denied"),
+            Error::NotFound => f.write_str("not found"),
+            Error::InvalidParameter => f.write_str("invalid parameter"),
+            Error::Unknown => f.write_str("unknown error"),
         }
     }
 }
