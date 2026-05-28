@@ -2,7 +2,6 @@
 pub mod audio;
 pub mod internal;
 
-#[cfg(feature = "wasm_client")]
 mod error;
 
 #[cfg(feature = "wasm_client")]
