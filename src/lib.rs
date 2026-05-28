@@ -7,7 +7,7 @@ mod error;
 
 #[cfg(feature = "wasm_client")]
 pub use boppo_core::*;
-#[cfg(feature = "wasm_client")]
+
 pub use error::Error;
 
 /// Initializes the Boppo WASM runtime and runs an async activity function.
