@@ -1,8 +1,9 @@
 #[repr(i32)]
 pub enum AudioParameter {
-    Pause = 0,
-    Volume = 1,
-    Speed = 2,
+    Stop = 0,
+    Pause = 1,
+    Volume = 2,
+    Speed = 3,
 }
 
 impl TryFrom<i32> for AudioParameter {
@@ -10,9 +11,10 @@ impl TryFrom<i32> for AudioParameter {
 
     fn try_from(value: i32) -> Result<Self, Self::Error> {
         match value {
-            0 => Ok(Self::Pause),
-            1 => Ok(Self::Volume),
-            2 => Ok(Self::Speed),
+            0 => Ok(Self::Stop),
+            1 => Ok(Self::Pause),
+            2 => Ok(Self::Volume),
+            3 => Ok(Self::Speed),
             _ => Err("Unknown audio parameter code."),
         }
     }

@@ -40,4 +40,8 @@ impl Error {
     pub fn as_neg_i32(&self) -> i32 {
         -(*self as i32)
     }
+
+    pub fn result_from_neg_i32(n: i32) -> Result<i32, Self> {
+        if n < 0 { Err(Error::from(-n)) } else { Ok(n) }
+    }
 }

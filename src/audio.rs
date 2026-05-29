@@ -1,27 +1,32 @@
-mod audio_handle;
+mod controller;
+mod host_ffi;
 
 use std::{
     collections::BTreeMap,
     sync::{OnceLock, RwLock},
 };
 
-pub use audio_handle::AudioHandle;
+pub use controller::Controller;
 use tokio::sync::oneshot::Sender;
+
+use crate::{Error, audio::host_ffi::boppo_play_sound_instruction};
 
 pub(crate) static OPENED_AUDIO_MAP: OnceLock<RwLock<BTreeMap<i32, Option<Sender<()>>>>> =
     OnceLock::new();
 
-#[link(wasm_import_module = "host")]
-unsafe extern "C" {
-    /// Stops and unloads all currently loaded audio clips.
-    fn boppo_stop_all_audio();
+// TODO change this to take a SoundBuilder
+pub fn play(path: &str) -> Result<(), Error> {
+    let handle = Error::result_from_neg_i32(unsafe {
+        boppo_play_sound_instruction(path.as_ptr(), path.len())
+    })?;
+    let mut map = OPENED_AUDIO_MAP.get().unwrap().write().unwrap();
+    map.insert(handle, None);
+    Ok(())
 }
 
-/// Stops and unloads all currently loaded audio clips, invalidating all
-/// existing audio handles, even unplayed ones.
 pub fn stop_all() {
     unsafe {
-        boppo_stop_all_audio();
+        host_ffi::boppo_stop_all_sounds();
     }
 }
 
