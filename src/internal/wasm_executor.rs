@@ -101,10 +101,10 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
             Err(e) => log::debug!("skipping unknown host event: {e}"),
             Ok(HostEvent::Button(e)) => broadcast_event(e),
             Ok(HostEvent::Timeout) => wake_and_clean_expired_timers(),
-            Ok(HostEvent::FinishedAudio(handle)) => {
+            Ok(HostEvent::FinishedAudio(controller_id)) => {
                 let mut optional_sender = {
                     let mut map = OPENED_AUDIO_MAP.get().unwrap().write().unwrap();
-                    map.remove(&handle)
+                    map.remove(&controller_id)
                 };
                 if let Some(mut optional_sender) = optional_sender.take()
                     && let Some(sender) = optional_sender.take()

@@ -5,9 +5,16 @@ use crate::Error;
 use crate::internal::audio::AudioParameter;
 
 /// A controller for a sound actively playing.
-pub struct Controller(i32);
+///
+/// Make a sound controllable by calling [`SoundBuilder.controller()`][super::SoundBuilder::controller].
+pub struct Controller(u64);
 
 impl Controller {
+    // internal
+    pub(crate) fn new(id: u64) -> Self {
+        Self(id)
+    }
+
     /// Return `true` if the sound has finished playing or has been stopped.
     pub fn is_finished(&self) -> bool {
         let map = OPENED_AUDIO_MAP.get().unwrap().read().unwrap();
