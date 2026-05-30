@@ -8,7 +8,11 @@ default = ["wasm_client"]
 wasm_client = []
 
 [dependencies]
-boppo_core = { git = "https://github.com/boppofun/rust_boppo_core", rev = "ac749cde1b5" }
+boppo_core = { git = "https://github.com/boppofun/rust_boppo_core", rev = "5ded3cc" }
 edge-executor = "0.4.1"
 embassy-time-driver = "0.2.2"
+serde_json = "1.0.128"
 tokio = { version = "1.21", features = ["sync"] }
+
+# [patch."https://github.com/boppofun/rust_boppo_core"]
+# boppo_core = { path = "../rust_boppo_core" }

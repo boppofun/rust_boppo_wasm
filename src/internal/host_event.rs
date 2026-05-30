@@ -4,7 +4,7 @@ use boppo_core::ButtonEvent;
 pub enum HostEvent {
     Exit,
     Button(ButtonEvent),
-    FinishedAudio(i32),
+    FinishedAudio(u64),
     Timeout,
 }
 
@@ -38,8 +38,8 @@ impl HostEvent {
         match self {
             Self::Button(b) => result[5..7].copy_from_slice(&b.as_u16().to_le_bytes()),
             Self::Exit => {}
-            Self::FinishedAudio(handle) => {
-                result[3..7].copy_from_slice(&handle.to_le_bytes());
+            Self::FinishedAudio(controller_id) => {
+                result.copy_from_slice(&controller_id.to_le_bytes()[0..7]);
             }
             Self::Timeout => {}
         }
@@ -63,8 +63,10 @@ impl TryFrom<i64> for HostEvent {
                 ))))
             }
             2 => {
-                let handle = i32::from_le_bytes(buffer[4..8].try_into().unwrap());
-                Ok(Self::FinishedAudio(handle))
+                let mut u64_buffer = [0u8; 8];
+                u64_buffer[0..7].copy_from_slice(&buffer[1..8]);
+                let controller_id = u64::from_le_bytes(u64_buffer);
+                Ok(Self::FinishedAudio(controller_id))
             }
             3 => Ok(Self::Timeout),
             n => Err(n),
