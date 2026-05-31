@@ -40,7 +40,7 @@ impl Controller {
     /// Pause or unpause the sound.
     ///
     /// `paused` is `true` if the sound should be paused, `false` if it should be unpaused.
-    pub fn set_paused(&self, paused: bool) -> Result<(), Error> {
+    pub fn set_paused(&self, paused: bool) {
         let value = if paused { 1. } else { 0. };
         self.set_controller_parameter(AudioParameter::Pause, value)
     }
@@ -50,26 +50,30 @@ impl Controller {
     /// The samples are multiplied by `multiplier` so 1.0 would leave the Sound
     /// unchanged. 0.5 would reduce the sample values by half and 2.0 would
     /// double them (saturating if larger than the max value).
-    pub fn set_volume(&self, multiplier: f32) -> Result<(), Error> {
+    pub fn set_volume(&self, multiplier: f32) {
         self.set_controller_parameter(AudioParameter::Volume, multiplier)
     }
 
-    pub fn set_speed(&self, multiplier: f32) -> Result<(), Error> {
+    pub fn set_speed(&self, multiplier: f32) {
         self.set_controller_parameter(AudioParameter::Speed, multiplier)
     }
 
-    pub fn stop(self) -> Result<(), Error> {
+    pub fn stop(self) {
         self.set_controller_parameter(AudioParameter::Stop, 1.0)
     }
 
-    fn set_controller_parameter(&self, param: AudioParameter, value: f32) -> Result<(), Error> {
-        unsafe {
-            Error::result_from_neg_i32(super::host_ffi::boppo_set_controller_parameter(
-                self.0,
-                param as i32,
-                value,
-            ))?;
-        };
-        Ok(())
+    fn set_controller_parameter(&self, param: AudioParameter, value: f32) {
+        let result =
+            unsafe { super::host_ffi::boppo_set_controller_parameter(self.0, param as i32, value) };
+        match Error::result_from_neg_i32(result) {
+            Ok(_) => (),
+            Err(Error::NotFound) => {
+                // Sound might have just finished already which should not be considered an error.
+            }
+            Err(e) => {
+                // Parameters have been validated already so we should not see any other errors.
+                panic!("Unexpected error setting controller parameter: {:?}", e);
+            }
+        }
     }
 }
