@@ -8,7 +8,7 @@ default = ["wasm_client"]
 wasm_client = []
 
 [dependencies]
-boppo_core = { git = "https://github.com/boppofun/rust_boppo_core", rev = "5ded3cc" }
+boppo_core = { git = "https://github.com/boppofun/rust_boppo_core", rev = "d5661a8" }
 edge-executor = "0.4.1"
 embassy-time-driver = "0.2.2"
 serde_json = "1.0.128"

@@ -1,4 +1,4 @@
-use crate::audio::OPENED_AUDIO_MAP;
+use crate::audio::PLAYING_CONTROLLERS;
 use tokio::sync::oneshot;
 
 use crate::Error;
@@ -17,7 +17,7 @@ impl Controller {
 
     /// Return `true` if the sound has finished playing or has been stopped.
     pub fn is_finished(&self) -> bool {
-        let map = OPENED_AUDIO_MAP.get().unwrap().read().unwrap();
+        let map = PLAYING_CONTROLLERS.get().unwrap().read().unwrap();
         map.get(&self.0).is_none()
     }
 
@@ -29,7 +29,7 @@ impl Controller {
         // Single threaded reliance: Its fine to check if finished and then insert the notifier since
         // we only receive notifications when we poll and our WASM executor is single threaded.
         let receiver = {
-            let mut map = OPENED_AUDIO_MAP.get().unwrap().write().unwrap();
+            let mut map = PLAYING_CONTROLLERS.get().unwrap().write().unwrap();
             let (sender, receiver) = oneshot::channel();
             map.insert(self.0, Some(sender));
             receiver
