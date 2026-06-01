@@ -7,11 +7,13 @@ use crate::internal::audio::AudioParameter;
 /// A controller for a sound actively playing.
 ///
 /// Make a sound controllable by calling [`SoundBuilder.controller()`][super::SoundBuilder::controller].
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Controller(u64);
 
 impl Controller {
     // internal
     pub(crate) fn new(id: u64) -> Self {
+        // inserted into PLAYING_CONTROLLERS in audio::play
         Self(id)
     }
 
@@ -31,7 +33,7 @@ impl Controller {
         let receiver = {
             let mut map = PLAYING_CONTROLLERS.get().unwrap().write().unwrap();
             let (sender, receiver) = oneshot::channel();
-            map.insert(self.0, Some(sender));
+            map.entry(self.0).or_default().push(sender);
             receiver
         };
         let _ = receiver.await;
