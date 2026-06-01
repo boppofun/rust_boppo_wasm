@@ -8,7 +8,7 @@ use boppo_core::log;
 use edge_executor::LocalExecutor;
 
 use crate::{
-    audio::OPENED_AUDIO_MAP,
+    audio::PLAYING_CONTROLLERS,
     internal::{HostEvent, buttons::broadcast_event},
 };
 
@@ -103,7 +103,7 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
             Ok(HostEvent::Timeout) => wake_and_clean_expired_timers(),
             Ok(HostEvent::FinishedAudio(controller_id)) => {
                 let mut optional_sender = {
-                    let mut map = OPENED_AUDIO_MAP.get().unwrap().write().unwrap();
+                    let mut map = PLAYING_CONTROLLERS.get().unwrap().write().unwrap();
                     map.remove(&controller_id)
                 };
                 if let Some(mut optional_sender) = optional_sender.take()
