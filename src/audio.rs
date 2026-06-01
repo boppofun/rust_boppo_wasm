@@ -3,6 +3,7 @@ mod host_ffi;
 
 pub mod sound_builder;
 
+use boppo_core::log::error;
 pub use controller::Controller;
 pub use sound_builder::{ControllerOpts, SoundBuilder};
 
@@ -13,7 +14,9 @@ use std::{
 };
 use tokio::sync::oneshot::Sender;
 
-pub(crate) static PLAYING_CONTROLLERS: OnceLock<RwLock<BTreeMap<u64, Option<Sender<()>>>>> =
+/// An empty vec signifies that the sound is currently playing but has no controller
+/// that is waiting for it to finish.
+pub(crate) static PLAYING_CONTROLLERS: OnceLock<RwLock<BTreeMap<u64, Vec<Sender<()>>>>> =
     OnceLock::new();
 
 /// Play `sound`
@@ -28,8 +31,30 @@ pub(crate) static PLAYING_CONTROLLERS: OnceLock<RwLock<BTreeMap<u64, Option<Send
 /// # Ok::<(), Box<dyn std::error::Error>>(())
 /// ```
 pub fn play(sound: impl Into<SoundBuilder>) -> Result<(), Error> {
-    let data = serde_json::to_string(sound.into().as_instruction()).unwrap();
+    let si = sound.into();
+    let data = match serde_json::to_string(si.as_instruction()) {
+        Ok(data) => data,
+        Err(e) => {
+            error!("Failed to serialize sound instruction: {e:?}");
+            return Err(Error::InvalidParameter);
+        }
+    };
+    let Some(ids) = si.as_instruction().controller_ids() else {
+        error!("Controller found inside Repeat.");
+        return Err(Error::InvalidParameter);
+    };
     Error::result_from_neg_i32(unsafe { boppo_play_sound_instruction(data.as_ptr(), data.len()) })?;
+    // Now that we know the sound is playing insert an empty vec to signify that
+    // the sound is playing but has no controller yet
+    for id in ids {
+        PLAYING_CONTROLLERS
+            .get()
+            .unwrap()
+            .write()
+            .unwrap()
+            .entry(id)
+            .or_default();
+    }
     Ok(())
 }
 

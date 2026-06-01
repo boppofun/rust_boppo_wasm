@@ -102,14 +102,14 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
             Ok(HostEvent::Button(e)) => broadcast_event(e),
             Ok(HostEvent::Timeout) => wake_and_clean_expired_timers(),
             Ok(HostEvent::FinishedAudio(controller_id)) => {
-                let mut optional_sender = {
+                let mut optional_senders = {
                     let mut map = PLAYING_CONTROLLERS.get().unwrap().write().unwrap();
                     map.remove(&controller_id)
                 };
-                if let Some(mut optional_sender) = optional_sender.take()
-                    && let Some(sender) = optional_sender.take()
-                {
-                    let _ = sender.send(());
+                if let Some(optional_senders) = optional_senders.take() {
+                    for sender in optional_senders {
+                        let _ = sender.send(());
+                    }
                 }
             }
             Ok(HostEvent::Exit) => {
