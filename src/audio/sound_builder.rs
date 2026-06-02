@@ -1,3 +1,4 @@
+//! [`SoundBuilder`] and related types for constructing sounds before playback.
 use super::Controller;
 use boppo_core::audio::{ControllerParams, SoundInstruction};
 use std::{
@@ -17,6 +18,7 @@ static CONTROLLER_ID_COUNTER: AtomicU64 = AtomicU64::new(5_000_000_000);
 /// While SoundBuilder implements Clone, cloning a SoundBuilder with a Controller
 /// will clone the ID. If played, any existing Controllers with the ID would now
 /// control the new sound even if the old sound is still playing.
+#[must_use = "SoundBuilder does nothing unless passed to audio::play or a similar function"]
 #[derive(Debug, PartialEq, Clone, Default)]
 pub struct SoundBuilder(SoundInstruction);
 
@@ -174,6 +176,7 @@ impl SoundBuilder {
         self.0
     }
 
+    /// Return a reference to the underlying [`SoundInstruction`].
     pub fn as_instruction(&self) -> &SoundInstruction {
         &self.0
     }
@@ -219,6 +222,7 @@ pub struct ControllerOpts {
 }
 
 impl ControllerOpts {
+    /// Create a new `ControllerOpts` with all fields set to their defaults.
     pub fn new() -> Self {
         Self::default()
     }

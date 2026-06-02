@@ -1,10 +1,15 @@
 use boppo_core::ButtonEvent;
 
+/// An event received from the Boppo WASM host via `boppo_poll`.
 #[non_exhaustive]
 pub enum HostEvent {
+    /// The host has requested that the activity exit.
     Exit,
+    /// A button was pressed or released.
     Button(ButtonEvent),
+    /// A sound with the given controller ID has finished playing.
     FinishedAudio(u64),
+    /// The poll timeout elapsed with no other event.
     Timeout,
 }
 

@@ -1,4 +1,4 @@
-//! Items internal to the WASM framework or used it initialize it.
+//! Items internal to the WASM framework or used to initialize it.
 //!
 //! Activity developers should not need to use these items directly
 //! unless they are manually initializing the WASM framework instead
@@ -23,6 +23,10 @@ pub use host_event::HostEvent;
 #[cfg(feature = "wasm_client")]
 pub use wasm_executor::block_on;
 
+/// Initialize all WASM subsystems (logger, lights, buttons, executor, audio).
+///
+/// Called automatically by [`crate::init_and_run_async`]. Only call this directly
+/// if you are manually driving the runtime instead of using that helper.
 #[cfg(feature = "wasm_client")]
 pub fn init() {
     logger::init();

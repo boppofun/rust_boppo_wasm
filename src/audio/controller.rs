@@ -18,6 +18,7 @@ impl Controller {
     }
 
     /// Return `true` if the sound has finished playing or has been stopped.
+    #[must_use]
     pub fn is_finished(&self) -> bool {
         let map = PLAYING_CONTROLLERS.get().unwrap().read().unwrap();
         map.get(&self.0).is_none()
@@ -56,10 +57,18 @@ impl Controller {
         self.set_controller_parameter(AudioParameter::Volume, multiplier)
     }
 
+    /// Set the playback speed of the sound.
+    ///
+    /// `multiplier` is a linear scale factor: `1.0` = original speed, `2.0` = double speed.
+    /// Pitch is adjusted proportionally to speed.
     pub fn set_speed(&self, multiplier: f32) {
         self.set_controller_parameter(AudioParameter::Speed, multiplier)
     }
 
+    /// Stop the sound immediately.
+    ///
+    /// A stopped sound can not be restarted. Waiting controllers will receive
+    /// their finished notification.
     pub fn stop(self) {
         self.set_controller_parameter(AudioParameter::Stop, 1.0)
     }
@@ -67,7 +76,7 @@ impl Controller {
     fn set_controller_parameter(&self, param: AudioParameter, value: f32) {
         let result =
             unsafe { super::host_ffi::boppo_set_controller_parameter(self.0, param as i32, value) };
-        match Error::result_from_neg_i32(result) {
+        match Error::result_from_i32(result) {
             Ok(_) => (),
             Err(Error::NotFound) => {
                 // Sound might have just finished already which should not be considered an error.

@@ -2,6 +2,15 @@
 name = "boppo_wasm"
 version = "0.1.0"
 edition = "2024"
+description = "Activity API for the Boppo Tablet, controling the lights, buttons, and audio via a WASM module."
+homepage = "https://developer.boppo.com"
+keywords = ["boppo", "wasm", "audio", "embedded", "led"]
+categories = ["api-bindings", "wasm"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/boppofun/rust_boppo_wasm"
+
+[package.metadata.docs.rs]
+features = ["wasm_client"]
 
 [features]
 default = ["wasm_client"]
