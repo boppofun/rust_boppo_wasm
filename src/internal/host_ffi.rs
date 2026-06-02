@@ -8,6 +8,10 @@ unsafe extern "C" {
 
     pub(crate) fn boppo_set_and_flush_lights(framebuffer_colors: *const c_void);
 
+    pub(crate) fn boppo_execute_command(cmd_ptr: *const u8, cmd_length: usize) -> i32;
+
+    // ## Audio APIs
+
     pub(crate) fn boppo_play_sound_instruction(si_ptr: *const u8, si_length: usize) -> i32;
 
     pub(crate) fn boppo_set_controller_parameter(
