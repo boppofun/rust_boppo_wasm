@@ -1,8 +1,14 @@
+//! Internal audio parameter types used for controller communication with the host.
+/// Parameter type for a controller command sent to the host.
 #[repr(i32)]
 pub enum AudioParameter {
+    /// Stop the sound.
     Stop = 0,
+    /// Pause or unpause the sound.
     Pause = 1,
+    /// Adjust the volume multiplier.
     Volume = 2,
+    /// Adjust the playback speed multiplier.
     Speed = 3,
 }
 

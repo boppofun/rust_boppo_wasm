@@ -1,8 +1,10 @@
+//! Audio playback and control for Boppo activities.
 mod controller;
 mod host_ffi;
 
-pub mod sound_builder;
+mod sound_builder;
 
+pub use boppo_core::audio::*;
 use boppo_core::log::error;
 pub use controller::Controller;
 pub use sound_builder::{ControllerOpts, SoundBuilder};
@@ -43,7 +45,7 @@ pub fn play(sound: impl Into<SoundBuilder>) -> Result<(), Error> {
         error!("Controller found inside Repeat.");
         return Err(Error::InvalidParameter);
     };
-    Error::result_from_neg_i32(unsafe { boppo_play_sound_instruction(data.as_ptr(), data.len()) })?;
+    Error::result_from_i32(unsafe { boppo_play_sound_instruction(data.as_ptr(), data.len()) })?;
     // Now that we know the sound is playing insert an empty vec to signify that
     // the sound is playing but has no controller yet
     for id in ids {
