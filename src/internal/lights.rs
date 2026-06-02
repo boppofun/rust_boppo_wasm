@@ -3,15 +3,13 @@ use std::os::raw::c_void;
 use boppo_core::Lights;
 use boppo_core::color::rgb::Rgb;
 
-#[link(wasm_import_module = "host")]
-unsafe extern "C" {
-    /// Calls flush on the host
-    fn boppo_set_and_flush_lights(framebuffer_colors: *const c_void);
-}
+use crate::internal::host_ffi;
 
 fn set_and_flush_lights(colors: &[boppo_core::color::RGB; Lights::COUNT]) {
     unsafe {
-        boppo_set_and_flush_lights(colors as *const [Rgb<u8>; Lights::COUNT] as *const c_void);
+        host_ffi::boppo_set_and_flush_lights(
+            colors as *const [Rgb<u8>; Lights::COUNT] as *const c_void,
+        );
     }
 }
 

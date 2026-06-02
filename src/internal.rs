@@ -11,6 +11,8 @@ pub mod audio;
 mod buttons;
 mod host_event;
 #[cfg(feature = "wasm_client")]
+pub(crate) mod host_ffi;
+#[cfg(feature = "wasm_client")]
 mod lights;
 #[cfg(feature = "wasm_client")]
 mod logger;

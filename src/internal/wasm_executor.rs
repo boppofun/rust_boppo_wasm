@@ -9,7 +9,7 @@ use edge_executor::LocalExecutor;
 
 use crate::{
     audio::PLAYING_CONTROLLERS,
-    internal::{HostEvent, buttons::broadcast_event},
+    internal::{HostEvent, buttons::broadcast_event, host_ffi},
 };
 
 use crate::internal::timer::{next_timeout, wake_and_clean_expired_timers};
@@ -57,16 +57,6 @@ fn signal_waker() -> Waker {
     unsafe { Waker::from_raw(RawWaker::new(std::ptr::null(), &VTABLE)) }
 }
 
-#[link(wasm_import_module = "host")]
-unsafe extern "C" {
-    /// Polling function for Button events with optional timeout.
-    /// If timeout_ms < 0, poll will happen indefinitely.
-    /// This can be used to poll for button events or wait a certain time if not event was received
-    /// in between.
-    /// Returns a HostEvent i64 representation.
-    pub fn boppo_poll(timeout_ms: i32) -> i64;
-}
-
 /// Block on a future with a custom async executor that integrates with the Boppo WASM host.
 ///
 /// Intended to be used to launch an async function from the main (sync) function of the module.
@@ -96,7 +86,7 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
         } else {
             next_timeout()
         };
-        let raw: Result<HostEvent, u8> = unsafe { boppo_poll(timeout) }.try_into();
+        let raw: Result<HostEvent, u8> = unsafe { host_ffi::boppo_poll(timeout) }.try_into();
         match raw {
             Err(e) => log::debug!("skipping unknown host event: {e}"),
             Ok(HostEvent::Button(e)) => broadcast_event(e),
