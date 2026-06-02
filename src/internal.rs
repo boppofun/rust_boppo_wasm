@@ -37,3 +37,24 @@ pub fn init() {
     wasm_executor::init();
     crate::audio::init();
 }
+
+/// This is exported for the WASM host to read the SDK version at runtime.
+#[unsafe(no_mangle)]
+pub static SDK_VERSION: u64 = {
+    let major = parse_u64(env!("CARGO_PKG_VERSION_MAJOR"));
+    let minor = parse_u64(env!("CARGO_PKG_VERSION_MINOR"));
+    let patch = parse_u64(env!("CARGO_PKG_VERSION_PATCH"));
+
+    (major << 32) | (minor << 16) | patch
+};
+
+const fn parse_u64(s: &str) -> u64 {
+    let bytes = s.as_bytes();
+    let mut result = 0u64;
+    let mut i = 0;
+    while i < bytes.len() {
+        result = result * 10 + (bytes[i] - b'0') as u64;
+        i += 1;
+    }
+    result
+}
