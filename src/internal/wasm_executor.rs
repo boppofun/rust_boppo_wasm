@@ -7,10 +7,7 @@ use std::{
 use boppo_core::log;
 use edge_executor::LocalExecutor;
 
-use crate::{
-    audio::PLAYING_CONTROLLERS,
-    internal::{HostEvent, buttons::broadcast_event, host_ffi},
-};
+use crate::internal::{HostEvent, buttons::broadcast_event, host_ffi};
 
 use crate::internal::timer::{next_timeout, wake_and_clean_expired_timers};
 
@@ -92,15 +89,7 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
             Ok(HostEvent::Button(e)) => broadcast_event(e),
             Ok(HostEvent::Timeout) => wake_and_clean_expired_timers(),
             Ok(HostEvent::FinishedAudio(controller_id)) => {
-                let mut optional_senders = {
-                    let mut map = PLAYING_CONTROLLERS.get().unwrap().write().unwrap();
-                    map.remove(&controller_id)
-                };
-                if let Some(optional_senders) = optional_senders.take() {
-                    for sender in optional_senders {
-                        let _ = sender.send(());
-                    }
-                }
+                boppo_core::hal::on_sound_controller_finished(controller_id);
             }
             Ok(HostEvent::Exit) => {
                 // Host requested exit.

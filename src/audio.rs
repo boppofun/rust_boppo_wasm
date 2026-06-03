@@ -1,24 +1,10 @@
 //! Audio playback and control for Boppo activities.
-mod controller;
-
-mod sound_builder;
-
+pub use boppo_core::audio::Controller;
 pub use boppo_core::audio::*;
+pub use boppo_core::audio::{ControllerOpts, SoundBuilder};
 use boppo_core::log::error;
-pub use controller::Controller;
-pub use sound_builder::{ControllerOpts, SoundBuilder};
 
 use crate::{Error, internal::host_ffi};
-use std::{
-    collections::BTreeMap,
-    sync::{OnceLock, RwLock},
-};
-use tokio::sync::oneshot::Sender;
-
-/// An empty vec signifies that the sound is currently playing but has no controller
-/// that is waiting for it to finish.
-pub(crate) static PLAYING_CONTROLLERS: OnceLock<RwLock<BTreeMap<u64, Vec<Sender<()>>>>> =
-    OnceLock::new();
 
 /// Play `sound`
 ///
@@ -50,13 +36,7 @@ pub fn play(sound: impl Into<SoundBuilder>) -> Result<(), Error> {
     // Now that we know the sound is playing insert an empty vec to signify that
     // the sound is playing but has no controller yet
     for id in ids {
-        PLAYING_CONTROLLERS
-            .get()
-            .unwrap()
-            .write()
-            .unwrap()
-            .entry(id)
-            .or_default();
+        boppo_core::hal::set_sound_controller_as_playing(id);
     }
     Ok(())
 }
@@ -85,13 +65,26 @@ pub async fn play_and_wait_until_finished(sound: impl Into<SoundBuilder>) -> Res
 /// Sounds controlled by a [`Controller`] will receive a finished notification.
 pub fn stop_all() {
     unsafe {
-        // the host is responsible for sending finished notifications that will clear out PLAYING_CONTROLLERS
+        // the host is responsible for sending finished notifications that will clear out
+        // the controllers map in boppo_core
         host_ffi::boppo_stop_all_sounds();
     }
 }
 
 pub(crate) fn init() {
-    use std::sync::RwLock;
+    boppo_core::hal::init_audio(set_controller_parameter);
+}
 
-    let _ = PLAYING_CONTROLLERS.set(RwLock::new(BTreeMap::new()));
+fn set_controller_parameter(id: u64, param: boppo_core::hal::AudioParameter, value: f32) {
+    let result = unsafe { host_ffi::boppo_set_controller_parameter(id, param as i32, value) };
+    match Error::result_from_i32(result) {
+        Ok(_) => (),
+        Err(Error::NotFound) => {
+            // Sound might have just finished already which should not be considered an error.
+        }
+        Err(e) => {
+            // Parameters have been validated already so we should not see any other errors.
+            panic!("Unexpected error setting controller parameter: {:?}", e);
+        }
+    }
 }

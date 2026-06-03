@@ -5,7 +5,6 @@
 //! of using the default `init_and_run_async`.
 //!
 //! Many items in internal are exported for the WASM host.
-pub mod audio;
 
 #[cfg(feature = "wasm_client")]
 mod buttons;
