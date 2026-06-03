@@ -44,7 +44,7 @@ pub mod internal;
 
 pub use boppo_core::*;
 
-pub use boppo_core::hal::wasm::Error;
+pub use boppo_core::internal::wasm::Error;
 
 /// Initializes the Boppo WASM runtime and runs an async activity function.
 ///

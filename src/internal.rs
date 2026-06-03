@@ -13,7 +13,7 @@ mod logger;
 mod timer;
 mod wasm_executor;
 
-pub use boppo_core::hal::wasm::HostEvent;
+pub use boppo_core::internal::wasm::HostEvent;
 pub use wasm_executor::block_on;
 
 /// Initialize all WASM subsystems (logger, lights, buttons, executor, audio).

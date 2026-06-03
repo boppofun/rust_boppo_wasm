@@ -14,5 +14,5 @@ fn set_and_flush_lights(colors: &[boppo_core::color::RGB; Lights::COUNT]) {
 }
 
 pub fn init_lights() {
-    boppo_core::hal::set_lights(set_and_flush_lights);
+    boppo_core::internal::set_lights(set_and_flush_lights);
 }

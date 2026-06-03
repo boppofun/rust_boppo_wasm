@@ -19,7 +19,7 @@ static EXECUTOR: AtomicPtr<LocalExecutor<'static, MAX_TASKS>> =
 pub fn init() {
     let executor = Box::leak(Box::new(LocalExecutor::<MAX_TASKS>::new()));
     EXECUTOR.store(executor as *mut _, std::sync::atomic::Ordering::Relaxed);
-    boppo_core::hal::set_executor(executor);
+    boppo_core::internal::set_executor(executor);
 }
 
 /// Gets the global WASM Executor.
@@ -88,7 +88,7 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
             Ok(HostEvent::Button(e)) => broadcast_event(e),
             Ok(HostEvent::Timeout) => wake_and_clean_expired_timers(),
             Ok(HostEvent::FinishedAudio(controller_id)) => {
-                boppo_core::hal::on_sound_controller_finished(controller_id);
+                boppo_core::internal::on_sound_controller_finished(controller_id);
             }
             Ok(HostEvent::Exit) => {
                 // Host requested exit.

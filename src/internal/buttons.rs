@@ -1,7 +1,7 @@
 use std::sync::OnceLock;
 
 use boppo_core::ButtonEvent;
-use boppo_core::hal::ButtonCounts;
+use boppo_core::internal::ButtonCounts;
 use tokio::sync::{broadcast, watch};
 
 static BUTTON_SENDER: OnceLock<broadcast::Sender<ButtonEvent>> = OnceLock::new();
@@ -18,8 +18,8 @@ pub(crate) fn broadcast_event(event: ButtonEvent) {
 pub(crate) fn init() {
     let (sender, _) = broadcast::channel::<ButtonEvent>(16);
     BUTTON_SENDER.set(sender.clone()).unwrap();
-    boppo_core::hal::set_button_events(sender);
+    boppo_core::internal::set_button_events(sender);
     let (button_counts_sender, button_counts_receiver) = watch::channel(ButtonCounts::default());
     BUTTON_COUNTS_SENDER.set(button_counts_sender).unwrap();
-    boppo_core::hal::set_button_counts(button_counts_receiver);
+    boppo_core::internal::set_button_counts(button_counts_receiver);
 }

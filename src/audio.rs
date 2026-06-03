@@ -52,7 +52,7 @@ pub fn play(sound: impl Into<SoundBuilder>) -> Result<(), Error> {
     // Now that we know the sound is playing insert an empty vec to signify that
     // the sound is playing but has no controller yet
     for id in ids {
-        boppo_core::hal::set_sound_controller_as_playing(id);
+        boppo_core::internal::on_sound_controller_started_playing(id);
     }
     Ok(())
 }
@@ -99,10 +99,10 @@ pub fn stop_all() {
 }
 
 pub(crate) fn init() {
-    boppo_core::hal::init_audio(set_controller_parameter);
+    boppo_core::internal::init_audio(set_controller_parameter);
 }
 
-fn set_controller_parameter(id: u64, param: boppo_core::hal::AudioParameter, value: f32) {
+fn set_controller_parameter(id: u64, param: boppo_core::internal::AudioParameter, value: f32) {
     let result = unsafe { host_ffi::boppo_set_sound_controller_parameter(id, param as i32, value) };
     match Error::result_from_i32(result) {
         Ok(_) => (),
