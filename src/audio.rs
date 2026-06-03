@@ -17,6 +17,22 @@ use crate::{Error, internal::host_ffi};
 /// play("music.mp3")?;
 /// # Ok::<(), Box<dyn std::error::Error>>(())
 /// ```
+///
+/// Play a sequence of files using `vec!`:
+///
+/// ```rust,no_run
+/// # use boppo_wasm::audio::play;
+/// play(vec!["intro.mp3", "main.mp3", "outro.mp3"])?;
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+///
+/// Loop background music indefinitely with `repeat_forever`:
+///
+/// ```rust,no_run
+/// # use boppo_wasm::audio::{play, SoundBuilder};
+/// play(SoundBuilder::file("background.mp3").repeat_forever())?;
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
 pub fn play(sound: impl Into<SoundBuilder>) -> Result<(), Error> {
     let si = sound.into();
     let data = match serde_json::to_string(si.as_instruction()) {
@@ -44,6 +60,17 @@ pub fn play(sound: impl Into<SoundBuilder>) -> Result<(), Error> {
 /// Wrap `sound` with a controller and play it.
 ///
 /// This is a convenience wrapper around [`SoundBuilder::controller`] and [`play`]
+///
+/// ## Examples
+///
+/// Play a sound with a controller to adjust volume during playback:
+///
+/// ```rust,no_run
+/// # use boppo_wasm::audio::{play_with_controller, SoundBuilder};
+/// let controller = play_with_controller("music.mp3")?;
+/// controller.set_volume(0.5);
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
 pub fn play_with_controller(sound: impl Into<SoundBuilder>) -> Result<Controller, Error> {
     let (sound, controller) = sound.into().controller();
     play(sound)?;
