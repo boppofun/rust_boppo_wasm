@@ -76,7 +76,7 @@ pub(crate) fn init() {
 }
 
 fn set_controller_parameter(id: u64, param: boppo_core::hal::AudioParameter, value: f32) {
-    let result = unsafe { host_ffi::boppo_set_controller_parameter(id, param as i32, value) };
+    let result = unsafe { host_ffi::boppo_set_sound_controller_parameter(id, param as i32, value) };
     match Error::result_from_i32(result) {
         Ok(_) => (),
         Err(Error::NotFound) => {

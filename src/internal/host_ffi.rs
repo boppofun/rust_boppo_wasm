@@ -14,7 +14,7 @@ unsafe extern "C" {
 
     pub(crate) fn boppo_play_sound_instruction(si_ptr: *const u8, si_length: usize) -> i32;
 
-    pub(crate) fn boppo_set_controller_parameter(
+    pub(crate) fn boppo_set_sound_controller_parameter(
         controller_id: u64,
         parameter: i32,
         value: f32,
