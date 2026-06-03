@@ -85,7 +85,6 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
         };
         let raw: Result<HostEvent, u8> = unsafe { host_ffi::boppo_poll(timeout) }.try_into();
         match raw {
-            Err(e) => log::debug!("skipping unknown host event: {e}"),
             Ok(HostEvent::Button(e)) => broadcast_event(e),
             Ok(HostEvent::Timeout) => wake_and_clean_expired_timers(),
             Ok(HostEvent::FinishedAudio(controller_id)) => {
@@ -95,6 +94,8 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
                 // Host requested exit.
                 std::process::exit(0);
             }
+            Err(e) => log::debug!("skipping unknown host event: {e}"),
+            Ok(_) => unreachable!(), // unknown events are caught above
         }
     }
 }

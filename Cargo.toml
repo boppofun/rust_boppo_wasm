@@ -9,15 +9,8 @@ categories = ["api-bindings", "wasm"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/boppofun/rust_boppo_wasm"
 
-[package.metadata.docs.rs]
-features = ["wasm_client"]
-
-[features]
-default = ["wasm_client"]
-wasm_client = []
-
 [dependencies]
-boppo_core = { git = "https://github.com/boppofun/rust_boppo_core", rev = "54249299" }
+boppo_core = { git = "https://github.com/boppofun/rust_boppo_core", rev = "037357ad", features = ["wasm"] }
 edge-executor = "0.4.1"
 embassy-time-driver = "0.2.2"
 serde_json = "1.0.128"

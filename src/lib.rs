@@ -38,16 +38,13 @@
 //! [Activity Guidelines](https://developer.boppo.com/docs/activity-guidelines)
 //! for guidelines on creating great activities.
 #![deny(missing_docs)]
-#[cfg(feature = "wasm_client")]
+
 pub mod audio;
 pub mod internal;
 
-mod error;
-
-#[cfg(feature = "wasm_client")]
 pub use boppo_core::*;
 
-pub use error::Error;
+pub use boppo_core::hal::wasm::Error;
 
 /// Initializes the Boppo WASM runtime and runs an async activity function.
 ///
@@ -70,7 +67,6 @@ pub use error::Error;
 ///    // ...
 /// }
 /// ```
-#[cfg(feature = "wasm_client")]
 pub fn init_and_run_async(mut activity_fn: impl AsyncFnMut(u32)) {
     internal::init();
     internal::block_on(async {
