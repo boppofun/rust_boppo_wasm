@@ -6,34 +6,8 @@ use boppo_core::log::error;
 
 use crate::{Error, internal::host_ffi};
 
-/// Play `sound`
-///
-/// ## Examples
-///
-/// Play a file:
-///
-/// ```rust,no_run
-/// # use boppo_wasm::audio::play;
-/// play("music.mp3")?;
-/// # Ok::<(), Box<dyn std::error::Error>>(())
-/// ```
-///
-/// Play a sequence of files using `vec!`:
-///
-/// ```rust,no_run
-/// # use boppo_wasm::audio::play;
-/// play(vec!["intro.mp3", "main.mp3", "outro.mp3"])?;
-/// # Ok::<(), Box<dyn std::error::Error>>(())
-/// ```
-///
-/// Loop background music indefinitely with `repeat_forever`:
-///
-/// ```rust,no_run
-/// # use boppo_wasm::audio::{play, SoundBuilder};
-/// play(SoundBuilder::file("background.mp3").repeat_forever())?;
-/// # Ok::<(), Box<dyn std::error::Error>>(())
-/// ```
-pub fn play(sound: impl Into<SoundBuilder>) -> Result<(), Error> {
+/// Play `sound`, returning an error if playback could not be started.
+pub fn try_play(sound: impl Into<SoundBuilder>) -> Result<(), Error> {
     let si = sound.into();
     let data = match serde_json::to_string(si.as_instruction()) {
         Ok(data) => data,
@@ -57,9 +31,45 @@ pub fn play(sound: impl Into<SoundBuilder>) -> Result<(), Error> {
     Ok(())
 }
 
+/// Play `sound`.
+///
+/// ## Examples
+///
+/// Play a file:
+///
+/// ```rust,no_run
+/// # use boppo_wasm::audio::play;
+/// play("music.mp3");
+/// ```
+///
+/// Play a sequence of files using `vec!`:
+///
+/// ```rust,no_run
+/// # use boppo_wasm::audio::play;
+/// play(vec!["intro.mp3", "main.mp3", "outro.mp3"]);
+/// ```
+///
+/// Loop background music indefinitely with `repeat_forever`:
+///
+/// ```rust,no_run
+/// # use boppo_wasm::audio::{play, SoundBuilder};
+/// play(SoundBuilder::file("background.mp3").repeat_forever());
+/// ```
+///
+/// # Panics
+///
+/// Panics if playback could not be started. Use [`try_play`] to handle errors.
+pub fn play(sound: impl Into<SoundBuilder>) {
+    try_play(sound).expect("failed to play sound");
+}
+
 /// Wrap `sound` with a controller and play it.
 ///
 /// This is a convenience wrapper around [`SoundBuilder::controller`] and [`play`]
+///
+/// # Panics
+///
+/// Panics if playback could not be started.
 ///
 /// ## Examples
 ///
@@ -67,22 +77,24 @@ pub fn play(sound: impl Into<SoundBuilder>) -> Result<(), Error> {
 ///
 /// ```rust,no_run
 /// # use boppo_wasm::audio::{play_with_controller, SoundBuilder};
-/// let controller = play_with_controller("music.mp3")?;
+/// let controller = play_with_controller("music.mp3");
 /// controller.set_volume(0.5);
-/// # Ok::<(), Box<dyn std::error::Error>>(())
 /// ```
-pub fn play_with_controller(sound: impl Into<SoundBuilder>) -> Result<Controller, Error> {
+pub fn play_with_controller(sound: impl Into<SoundBuilder>) -> Controller {
     let (sound, controller) = sound.into().controller();
-    play(sound)?;
-    Ok(controller)
+    play(sound);
+    controller
 }
 
 /// Play `sound` and wait until it finishes.
 ///
 /// This is a convenience wrapper around [`SoundBuilder::controller`], [`play`], and [`Controller::wait_until_finished`].
-pub async fn play_and_wait_until_finished(sound: impl Into<SoundBuilder>) -> Result<(), Error> {
-    play_with_controller(sound)?.wait_until_finished().await;
-    Ok(())
+///
+/// # Panics
+///
+/// Panics if playback could not be started.
+pub async fn play_and_wait_until_finished(sound: impl Into<SoundBuilder>) {
+    play_with_controller(sound).wait_until_finished().await;
 }
 
 /// Stop all currently playing sounds.
