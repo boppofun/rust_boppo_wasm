@@ -3,6 +3,7 @@ check:
 
 release-checks:
     cargo build
+    cargo fmt
     cargo clippy
     cargo test --all-features -q
     cargo doc --all-features

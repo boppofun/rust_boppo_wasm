@@ -1,6 +1,7 @@
-//! # [Boppo](https://developer.boppo.com) WebAssembly Activity API for Rust
+//! # Boppo WASM Activity API for Rust
 //!
-//! Activities are compiled to WASM and run on the tablet.
+//! Activities are compiled to WASM and run on the
+//! [Boppo](https://developer.boppo.com) tablet.
 //!
 //! ## Getting Started
 //!
@@ -43,8 +44,7 @@
 //!
 //! See Boppo's [Activity
 //! Guidelines](https://developer.boppo.com/docs/activity-guidelines) for
-//! guidelines on creating great activities.uch of the API (e.g. handling button
-//! events, setting button colors)
+//! guidelines on creating great activities.
 #![deny(missing_docs)]
 
 pub mod audio;

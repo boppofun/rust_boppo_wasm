@@ -1,6 +1,6 @@
-# [Boppo](https://developer.boppo.com) WebAssembly Activity API for Rust [![Docs Passing]][docs.rs] [![Latest Version]][crates.io]
+# Boppo WASM Activity API for Rust [![Docs Passing]][docs.rs] [![Latest Version]][crates.io]
 
-Activities are compiled to WASM and run on the tablet.
+The on-device activity API for the [Boppo Tablet](https://developer.boppo.com/).
 
 ## Getting Started
 

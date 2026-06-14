@@ -65,7 +65,7 @@ pub fn play(sound: impl Into<SoundBuilder>) {
 
 /// Wrap `sound` with a controller and play it.
 ///
-/// This is a convenience wrapper around [`SoundBuilder::controller`] and [`play`]
+/// This is a convenience wrapper around [`SoundBuilder::controller`] and [`play`].
 ///
 /// # Panics
 ///

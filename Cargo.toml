@@ -2,7 +2,7 @@
 name = "boppo_wasm"
 version = "0.1.0"
 edition = "2024"
-description = "Activity API for the Boppo Tablet, controling the lights, buttons, and audio via a WASM module."
+description = "Activity API for the Boppo Tablet, controlling the lights, buttons, and audio via a WASM module."
 homepage = "https://developer.boppo.com"
 keywords = ["boppo", "wasm", "audio", "embedded", "led"]
 categories = ["api-bindings", "wasm"]
