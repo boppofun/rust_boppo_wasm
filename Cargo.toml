@@ -10,7 +10,8 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/boppofun/rust_boppo_wasm"
 
 [dependencies]
-boppo_core = { git = "https://github.com/boppofun/rust_boppo_core", rev = "15561980", features = ["wasm"] }
+boppo_core = { version = "0.2.0", features = ["wasm"] }
+# boppo_core = { git = "https://github.com/boppofun/rust_boppo_core", rev = "15561980", features = ["wasm"] }
 edge-executor = "0.4.1"
 embassy-time-driver = "0.2.2"
 serde_json = "1.0.128"
