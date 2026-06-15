@@ -1,6 +1,6 @@
 [package]
 name = "boppo_wasm"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Activity API for the Boppo Tablet, controlling the lights, buttons, and audio via a WASM module."
 homepage = "https://developer.boppo.com"
