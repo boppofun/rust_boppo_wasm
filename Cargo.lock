@@ -16,9 +16,8 @@ checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 
 [[package]]
 name = "boppo_core"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c20962b2c420486a497e846cbca1c7b96b690e64072ea441443471effeee9132"
+version = "0.2.1"
+source = "git+https://github.com/boppofun/rust_boppo_core?rev=7f44f65a#7f44f65a03d2596c279d2d204e233cfdb8b26fd3"
 dependencies = [
  "edge-executor",
  "embassy-time",

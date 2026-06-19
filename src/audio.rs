@@ -33,7 +33,7 @@ pub fn try_play(sound: impl Into<SoundBuilder>) -> Result<(), Error> {
 
 /// Play `sound`.
 ///
-/// ## Examples
+/// # Examples
 ///
 /// Play a file:
 ///
@@ -58,7 +58,7 @@ pub fn try_play(sound: impl Into<SoundBuilder>) -> Result<(), Error> {
 ///
 /// # Panics
 ///
-/// Panics if playback could not be started. Use [`try_play`] to handle errors.
+/// Panics if playback could not be started (e.g. file not found). Use [`try_play`] to handle errors.
 pub fn play(sound: impl Into<SoundBuilder>) {
     try_play(sound).expect("failed to play sound");
 }
@@ -67,11 +67,7 @@ pub fn play(sound: impl Into<SoundBuilder>) {
 ///
 /// This is a convenience wrapper around [`SoundBuilder::controller`] and [`play`].
 ///
-/// # Panics
-///
-/// Panics if playback could not be started.
-///
-/// ## Examples
+/// # Examples
 ///
 /// Play a sound with a controller to adjust volume during playback:
 ///
@@ -80,6 +76,10 @@ pub fn play(sound: impl Into<SoundBuilder>) {
 /// let controller = play_with_controller("music.mp3");
 /// controller.set_volume(0.5);
 /// ```
+///
+/// # Panics
+///
+/// Panics if playback could not be started (e.g. file not found).
 pub fn play_with_controller(sound: impl Into<SoundBuilder>) -> Controller {
     let (sound, controller) = sound.into().controller();
     play(sound);
@@ -92,7 +92,7 @@ pub fn play_with_controller(sound: impl Into<SoundBuilder>) -> Controller {
 ///
 /// # Panics
 ///
-/// Panics if playback could not be started.
+/// Panics if playback could not be started (e.g. file not found).
 pub async fn play_and_wait_until_finished(sound: impl Into<SoundBuilder>) {
     play_with_controller(sound).wait_until_finished().await;
 }
@@ -111,7 +111,7 @@ pub fn stop_all() {
 }
 
 pub(crate) fn init() {
-    boppo_core::internal::init_audio(set_controller_parameter);
+    boppo_core::internal::init_audio(play, set_controller_parameter);
 }
 
 fn set_controller_parameter(id: u64, param: boppo_core::internal::AudioParameter, value: f32) {
