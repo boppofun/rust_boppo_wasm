@@ -37,8 +37,8 @@ pub fn execute_command(command: &str) -> Result<(), Error> {
 ///
 /// let mut buf = [0u8; 16];
 ///
-/// // retreive the high score for an activity, and store its string in `buf`
-/// execute_command_with_buffer("score_retreive ...", &mut buf).unwrap();
+/// // retrieve the high score for an activity, and store its string in `buf`
+/// execute_command_with_buffer("score_retrieve ...", &mut buf).unwrap();
 /// ```
 pub fn execute_command_with_buffer(command: &str, buffer: &mut [u8]) -> Result<u64, Error> {
     let res = unsafe {
