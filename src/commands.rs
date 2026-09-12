@@ -28,6 +28,10 @@ pub fn execute_command(command: &str) -> Result<(), Error> {
 
 /// Execute a command, outputting to `buf` instead of stdout, returning the number of bytes written to `buf`.
 ///
+/// ## Errors
+///
+/// If `buf` has insufficient space for the output of `command`, this function will return [`Err(Error::InvalidParameter)`][Error::InvalidParameter]
+///
 /// See the full list of supported commands at [developer.boppo.com/docs/commands](https://developer.boppo.com/docs/commands)
 ///
 /// ## Examples
