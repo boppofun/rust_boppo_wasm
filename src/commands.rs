@@ -54,10 +54,13 @@ pub fn execute_command_with_buffer(command: &str, buffer: &mut [u8]) -> Result<u
         )
     };
 
-    Error::result_from_i32(i32::try_from(res).map_err(|_| {
-        crate::log::error!("Could not fit result into i32");
-        Error::Unknown.as_neg_i32()
-    })?)
-    // WASM and ESP32 are both little-endian.
-    .map(|_| u64::from_ne_bytes(res.to_ne_bytes()))
+    if res >= 0 {
+        Ok(res.cast_unsigned())
+    } else {
+        Err(Error::result_from_i32(i32::try_from(res).map_err(|_| {
+            crate::log::error!("Could not fit result into u32");
+            Error::Unknown.as_neg_i32()
+        })?)
+        .unwrap_err())
+    }
 }
