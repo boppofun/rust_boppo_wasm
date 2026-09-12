@@ -15,7 +15,7 @@ unsafe extern "C" {
         cmd_length: usize,
         buffer_ptr: *mut u8,
         buffer_len: usize,
-    ) -> i32;
+    ) -> i64;
 
     // ## Audio APIs
 

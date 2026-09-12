@@ -26,7 +26,7 @@ pub fn execute_command(command: &str) -> Result<(), Error> {
     Ok(())
 }
 
-/// Execute a command, outputting to `buf` instead of stdout.
+/// Execute a command, outputting to `buf` instead of stdout, returning the number of bytes written to `buf`.
 ///
 /// See the full list of supported commands at [developer.boppo.com/docs/commands](https://developer.boppo.com/docs/commands)
 ///
@@ -40,14 +40,20 @@ pub fn execute_command(command: &str) -> Result<(), Error> {
 /// // retreive the high score for an activity, and store its string in `buf`
 /// execute_command_with_buffer("score_retreive ...", &mut buf).unwrap();
 /// ```
-pub fn execute_command_with_buffer(command: &str, buffer: &mut [u8]) -> Result<(), Error> {
-    Error::result_from_i32(unsafe {
+pub fn execute_command_with_buffer(command: &str, buffer: &mut [u8]) -> Result<u64, Error> {
+    let res = unsafe {
         crate::internal::host_ffi::boppo_execute_command_with_buffer(
             command.as_ptr(),
             command.len(),
             buffer.as_mut_ptr(),
             buffer.len(),
         )
-    })?;
-    Ok(())
+    };
+
+    Error::result_from_i32(i32::try_from(res).map_err(|_| {
+        crate::log::error!("Could not fit result into i32");
+        Error::Unknown.as_neg_i32()
+    })?)
+    // WASM and ESP32 are both little-endian.
+    .map(|_| u64::from_ne_bytes(res.to_ne_bytes()))
 }
