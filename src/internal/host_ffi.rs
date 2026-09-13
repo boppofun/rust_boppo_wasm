@@ -10,6 +10,13 @@ unsafe extern "C" {
 
     pub(crate) fn boppo_execute_command(cmd_ptr: *const u8, cmd_length: usize) -> i32;
 
+    pub(crate) fn boppo_execute_command_with_buffer(
+        cmd_ptr: *const u8,
+        cmd_length: usize,
+        buffer_ptr: *mut u8,
+        buffer_length: usize,
+    ) -> i64;
+
     // ## Audio APIs
 
     pub(crate) fn boppo_play_sound_instruction(si_ptr: *const u8, si_length: usize) -> i32;
