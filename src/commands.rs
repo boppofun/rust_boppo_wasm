@@ -28,6 +28,8 @@ pub fn execute_command(command: &str) -> Result<(), Error> {
 
 /// Execute a command, outputting to `buf` instead of stdout, returning the number of bytes written to `buf`.
 ///
+/// Requires firmware version >= 320
+///
 /// ## Errors
 ///
 /// If `buf` has insufficient space for the output of `command`, this function will return [`Err(Error::InvalidParameter)`][Error::InvalidParameter]
