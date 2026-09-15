@@ -101,6 +101,8 @@ pub fn init_and_run_async(mut activity_fn: impl AsyncFnMut(u32)) {
 /// Sends the user back to the main menu after `activity_fn` returns, after
 /// all audio is stopped and the lights are turned off.
 ///
+/// See [`init_and_run_async`].
+///
 /// ```no_run
 /// use boppo_wasm::{Button, color};
 ///
