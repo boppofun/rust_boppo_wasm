@@ -62,7 +62,8 @@ pub use boppo_core::internal::wasm::Error;
 /// lights are turned off before starting again. The activity is passed in the
 /// number of times it has been started (the first time is 1).
 ///
-/// If you would like to return to the main menu, you can call std::process::exit(0).
+/// If you would like to return to the main menu, you can call
+/// [`std::process::exit(0)`][std::process::exit].
 ///
 /// See [`init_and_run_once_async`] for a non-looping version.
 ///
@@ -92,7 +93,7 @@ pub fn init_and_run_async(mut activity_fn: impl AsyncFnMut(u32)) {
             boppo_core::executor::sleep_ms(50).await;
             num_starts += 1;
         }
-    })
+    });
 }
 
 /// Initializes the Boppo WASM runtime and runs an async activity function.
