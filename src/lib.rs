@@ -64,6 +64,8 @@ pub use boppo_core::internal::wasm::Error;
 ///
 /// If you would like to return to the main menu, you can call std::process::exit(0).
 ///
+/// See [`init_and_run_once_async`] for a non-looping version.
+///
 /// ```no_run
 /// use boppo_wasm::{Button, color};
 ///
@@ -91,4 +93,30 @@ pub fn init_and_run_async(mut activity_fn: impl AsyncFnMut(u32)) {
             num_starts += 1;
         }
     })
+}
+
+/// Initializes the Boppo WASM runtime and runs an async activity function.
+///
+/// Sends the user back to the main menu after `activity_fn` returns, after
+/// all audio is stopped and the lights are turned off.
+///
+/// ```no_run
+/// use boppo_wasm::{Button, color};
+///
+/// pub fn main() {
+///     boppo_wasm::init_and_run_once_async(activity)
+/// }
+///
+/// pub async fn activity() {
+///     Button::B0.set_color(color::BLUE);
+///    // ...
+/// }
+/// ```
+pub fn init_and_run_once_async(mut activity_fn: impl AsyncFnMut()) {
+    internal::init();
+    internal::block_on(async {
+        activity_fn().await;
+        audio::stop_all();
+        Buttons::all().set_color(color::OFF);
+    });
 }
