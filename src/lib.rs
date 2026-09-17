@@ -117,9 +117,5 @@ pub fn init_and_run_async(mut activity_fn: impl AsyncFnMut(u32)) {
 /// ```
 pub fn init_and_run_once_async(activity_fn: impl AsyncFnOnce()) {
     internal::init();
-    internal::block_on(async {
-        activity_fn().await;
-        audio::stop_all();
-        Buttons::all().set_color(color::OFF);
-    });
+    internal::block_on(activity_fn());
 }
