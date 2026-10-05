@@ -17,9 +17,10 @@ checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 [[package]]
 name = "boppo_core"
 version = "0.2.1"
-source = "git+https://github.com/boppofun/rust_boppo_core?rev=7460b9e#7460b9e9632186561270cb99a1763a497105a67b"
+source = "git+https://github.com/boppofun/rust_boppo_core?rev=66e95736#66e95736288ef9762dfaaaff1c43f735d2b8c070"
 dependencies = [
  "edge-executor",
+ "embassy-futures",
  "embassy-time",
  "futures",
  "log",
@@ -95,6 +96,12 @@ dependencies = [
  "futures-lite",
  "once_cell",
 ]
+
+[[package]]
+name = "embassy-futures"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dc2d050bdc5c21e0862a89256ed8029ae6c290a93aecefc73084b3002cdebb01"
 
 [[package]]
 name = "embassy-time"
