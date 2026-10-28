@@ -79,7 +79,7 @@ pub fn block_on<T>(fut: impl Future<Output = T>) -> T {
         // starvation.
         // Otherwise block until the next event or timer (-1 if no timer is pending).
         let timeout = if WOKEN.load(Ordering::Relaxed) {
-            continue;
+            0
         } else {
             next_timeout()
         };
