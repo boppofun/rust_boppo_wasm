@@ -17,7 +17,7 @@ checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 [[package]]
 name = "boppo_core"
 version = "0.2.1"
-source = "git+https://github.com/boppofun/rust_boppo_core?rev=66e95736#66e95736288ef9762dfaaaff1c43f735d2b8c070"
+source = "git+https://github.com/boppofun/rust_boppo_core?rev=bf92384a#bf92384a5bf9a6e0d320b4d05b6a5388a86e60d1"
 dependencies = [
  "edge-executor",
  "embassy-futures",
